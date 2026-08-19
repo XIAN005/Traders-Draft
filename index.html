@@ -99,6 +99,9 @@
           <option value="en">EN</option>
         </select>
         <select id="accountSelector" class="max-w-[38vw] sm:max-w-none bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition truncate"></select>
+        <button id="deleteAccountBtn" type="button" aria-label="Delete account" class="bg-panel2 border border-border hover:border-bad/40 hover:text-bad text-slate-400 rounded-lg p-1.5 transition shrink-0 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-slate-400">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M6.5 4V2.8c0-.4.3-.8.8-.8h1.4c.5 0 .8.4.8.8V4M4.5 4l.5 9c0 .6.5 1 1 1h4c.5 0 1-.4 1-1l.5-9"/></svg>
+        </button>
         <button id="addAccountBtn" data-i18n="addAccountBtn" type="button" class="bg-panel2 border border-border hover:border-accent/30 hover:text-accent text-xs font-semibold rounded-lg px-2.5 py-1.5 text-slate-300 transition shrink-0">+ Compte</button>
       </div>
     </div>
@@ -109,6 +112,7 @@
     <!-- MAIN TABS -->
     <div class="flex gap-1 bg-panel border border-border rounded-xl p-1 shadow-card">
       <button id="tabCalcBtn" data-i18n="tabCalc" class="main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg bg-accent/10 text-accent border border-accent/30 transition">Calculateur &amp; Checklist</button>
+      <button id="tabAnalyticsBtn" data-i18n="analyticsTitle" class="main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition">Statistiques</button>
       <button id="tabEduBtn" data-i18n="tabEdu" class="main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition">Guide &amp; Éducation</button>
     </div>
 
@@ -251,12 +255,88 @@
             <input id="newRuleInput" type="text" class="flex-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" />
             <button id="addRuleBtn" data-i18n="addRuleBtn" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-panel2 border border-border text-slate-300 hover:text-accent hover:border-accent/30 active:scale-95 transition">Ajouter</button>
           </div>
+          <div>
+            <label data-i18n="tradeNotesLabel" class="text-[11px] font-medium text-slate-500">Note (optionnel)</label>
+            <textarea id="tradeNotesInput" rows="2" data-i18n-placeholder="tradeNotesPlaceholder" class="w-full mt-1.5 bg-panel2 border border-border rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition resize-none"></textarea>
+          </div>
           <button id="logTradeBtn" disabled class="w-full mt-4 py-3 rounded-xl text-sm font-bold bg-slate-700/50 text-slate-500 cursor-not-allowed transition active:scale-[0.98]">
             Complete checklist
           </button>
         </div>
       </aside>
     </div>
+
+    <!-- ANALYTICS SECTION -->
+    <section id="analyticsSection" class="hidden space-y-4 sm:space-y-6">
+      <div id="analyticsEmptyState" class="card border border-border rounded-2xl p-6 sm:p-8 shadow-card text-center">
+        <p data-i18n="analyticsEmpty" class="text-sm text-slate-500">Clôturez des trades pour voir vos statistiques apparaître ici.</p>
+      </div>
+
+      <div id="analyticsContent" class="hidden space-y-4 sm:space-y-6">
+        <!-- Summary stats -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+          <div class="card border border-border rounded-xl p-3.5 sm:p-4">
+            <p data-i18n="statTotalTrades" class="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Trades clôturés</p>
+            <p id="statTotalTrades" class="mono text-lg sm:text-xl font-bold text-slate-100 mt-1">—</p>
+          </div>
+          <div class="card border border-border rounded-xl p-3.5 sm:p-4">
+            <p data-i18n="statAvgWin" class="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Gain moyen</p>
+            <p id="statAvgWin" class="mono text-lg sm:text-xl font-bold text-good mt-1">—</p>
+          </div>
+          <div class="card border border-border rounded-xl p-3.5 sm:p-4">
+            <p data-i18n="statAvgLoss" class="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Perte moyenne</p>
+            <p id="statAvgLoss" class="mono text-lg sm:text-xl font-bold text-bad mt-1">—</p>
+          </div>
+          <div class="card border border-border rounded-xl p-3.5 sm:p-4">
+            <p data-i18n="statMaxDrawdown" class="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Drawdown Max</p>
+            <p id="statMaxDrawdown" class="mono text-lg sm:text-xl font-bold text-bad mt-1">—</p>
+          </div>
+        </div>
+
+        <!-- Equity curve -->
+        <div class="card border border-border rounded-2xl p-4 sm:p-5 shadow-card">
+          <h3 data-i18n="equityCurveTitle" class="text-sm font-semibold text-slate-200 mb-3">Courbe de Capital (en R cumulés)</h3>
+          <svg id="equityCurveSvg" viewBox="0 0 600 200" class="w-full h-40 sm:h-48" preserveAspectRatio="none"></svg>
+        </div>
+
+        <!-- By asset class -->
+        <div class="card border border-border rounded-2xl p-4 sm:p-5 shadow-card">
+          <h3 data-i18n="byAssetTitle" class="text-sm font-semibold text-slate-200 mb-3">Performance par Classe d'Actif</h3>
+          <div class="overflow-x-auto -mx-1 px-1">
+            <table class="w-full text-left text-xs text-slate-300 min-w-[440px]">
+              <thead class="text-slate-500 uppercase text-[10px] tracking-wide">
+                <tr>
+                  <th class="py-2 font-medium"></th>
+                  <th data-i18n="colTrades" class="py-2 font-medium">Trades</th>
+                  <th data-i18n="colWinRate" class="py-2 font-medium">Win Rate</th>
+                  <th data-i18n="colExpectancy" class="py-2 font-medium">Espérance</th>
+                </tr>
+              </thead>
+              <tbody id="byAssetTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Checklist rigor vs outcome -->
+        <div class="card border border-border rounded-2xl p-4 sm:p-5 shadow-card">
+          <h3 data-i18n="byRuleTitle" class="text-sm font-semibold text-slate-200 mb-1">Rigueur de Checklist vs Résultat</h3>
+          <p data-i18n="byRuleDesc" class="text-[11px] text-slate-500 mb-3">Compare le nombre de règles actives au moment du trade avec le résultat obtenu.</p>
+          <div id="byRuleContent" class="overflow-x-auto -mx-1 px-1">
+            <table class="w-full text-left text-xs text-slate-300 min-w-[440px]">
+              <thead class="text-slate-500 uppercase text-[10px] tracking-wide">
+                <tr>
+                  <th class="py-2 font-medium">#Règles</th>
+                  <th data-i18n="colTrades" class="py-2 font-medium">Trades</th>
+                  <th data-i18n="colWinRate" class="py-2 font-medium">Win Rate</th>
+                  <th data-i18n="colExpectancy" class="py-2 font-medium">Espérance</th>
+                </tr>
+              </thead>
+              <tbody id="byRuleTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- EDUCATION SECTION -->
     <section id="educationSection" class="hidden space-y-4 sm:space-y-6">
@@ -360,8 +440,41 @@
         <button id="closeTradeConfirmBtn" type="button" data-i18n="resultConfirmBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-accent text-slate-900 hover:bg-accent2 transition">Confirmer</button>
       </div>
     </div>
+  <!-- TRADE NOTE MODAL -->
+  <div id="tradeNoteModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
+    <div id="tradeNoteBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4">
+      <h3 data-i18n="tradeNoteTitle" class="text-sm font-semibold text-slate-100">Note du trade</h3>
+      <textarea id="tradeNoteTextarea" rows="4" data-i18n-placeholder="tradeNotesPlaceholder" class="w-full bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition resize-none"></textarea>
+      <div class="flex gap-2 pt-1">
+        <button id="tradeNoteCancelBtn" type="button" data-i18n="accCancelBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-panel2 border border-border text-slate-300 hover:text-slate-100 transition">Annuler</button>
+        <button id="tradeNoteSaveBtn" type="button" data-i18n="tradeNoteSaveBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-accent text-slate-900 hover:bg-accent2 transition">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE ACCOUNT MODAL -->
+  <div id="deleteAccountModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
+    <div id="deleteAccountBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4">
+      <h3 data-i18n="delAccountTitle" class="text-sm font-semibold text-slate-100">Supprimer le compte</h3>
+      <p id="deleteAccountText" class="text-xs text-slate-400 leading-relaxed"></p>
+      <div class="flex gap-2 pt-1">
+        <button id="deleteAccountCancelBtn" type="button" data-i18n="accCancelBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-panel2 border border-border text-slate-300 hover:text-slate-100 transition">Annuler</button>
+        <button id="deleteAccountConfirmBtn" type="button" data-i18n="delAccountConfirmBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-bad text-slate-900 hover:bg-bad/90 transition">Supprimer</button>
+      </div>
+    </div>
   </div>
 </div>
+
+<footer class="border-t border-border py-4 px-3 sm:px-5">
+  <div class="max-w-7xl mx-auto flex justify-center">
+    <a href="https://xian005.github.io/Traders-Draft/" target="_blank" rel="noopener noreferrer" class="text-[11px] text-slate-500 hover:text-accent transition flex items-center gap-1.5">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+      <span>xian005 / Traders-Draft</span>
+    </a>
+  </div>
+</footer>
 
 <script src="i18n.js"></script>
 <script src="db.js"></script>

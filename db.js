@@ -139,7 +139,8 @@ const DB = (() => {
       rMultiple: null,
       createdAt: Date.now(),
       closedAt: null,
-      notes: data.notes || ''
+      notes: data.notes || '',
+      activeRuleCount: data.activeRuleCount ?? null
     }),
     delete: (id) => remove(STORES.trades, id)
   };
