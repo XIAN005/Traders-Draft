@@ -3,13 +3,13 @@
  */
 const Seed = (() => {
   const DEFAULT_CHECKLIST = [
-    { label: 'Stop-Loss placement verified before execution', category: 'risk', order: 1 },
-    { label: 'Position size matches max risk threshold', category: 'risk', order: 2 },
-    { label: 'No high-impact economic news within 15 minutes', category: 'market', order: 3 },
-    { label: 'Setup fully complies with written trading plan', category: 'strategy', order: 4 },
-    { label: 'Not influenced by recent trade results (No Revenge Trading)', category: 'psychology', order: 5 },
-    { label: 'Calm, focused, and free from FOMO', category: 'psychology', order: 6 },
-    { label: 'Daily drawdown limit respected', category: 'risk', order: 7 }
+    { labelKey: 'ruleStopLoss', category: 'risk', order: 1 },
+    { labelKey: 'rulePositionSize', category: 'risk', order: 2 },
+    { labelKey: 'ruleNoNews', category: 'market', order: 3 },
+    { labelKey: 'ruleTradingPlan', category: 'strategy', order: 4 },
+    { labelKey: 'ruleNoRevenge', category: 'psychology', order: 5 },
+    { labelKey: 'ruleCalmFocused', category: 'psychology', order: 6 },
+    { labelKey: 'ruleDailyDrawdown', category: 'risk', order: 7 }
   ];
 
   async function runIfNeeded() {
@@ -26,7 +26,8 @@ const Seed = (() => {
     const existingAccounts = await DB.Accounts.all();
     if (existingAccounts.length === 0) {
       const acc = await DB.Accounts.create({
-        name: 'Demo Account',
+        name: '',
+        nameKey: 'defaultAccountName',
         type: 'personal',
         capital: 10000,
         currency: 'USD'

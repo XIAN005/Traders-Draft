@@ -34,7 +34,7 @@
     }
 
     sel.innerHTML = state.accounts.map(a =>
-      `<option value="${a.id}" ${a.id === state.activeAccount?.id ? 'selected' : ''}>${escapeHtml(a.name)} · $${a.capital.toLocaleString()} (${a.type.toUpperCase()})</option>`
+      `<option value="${a.id}" ${a.id === state.activeAccount?.id ? 'selected' : ''}>${escapeHtml(a.nameKey ? I18n.get(a.nameKey) : a.name)} · $${a.capital.toLocaleString()}</option>`
     ).join('');
 
     if (state.activeAccount) {
@@ -55,7 +55,7 @@
       <div class="flex items-center justify-between p-2 rounded-lg border border-border bg-panel2/50 hover:bg-panel2 transition group">
         <label class="flex items-start gap-2.5 cursor-pointer flex-1">
           <input type="checkbox" data-rule-id="${rule.id}" class="checklist-checkbox mt-0.5 rounded border-border bg-panel2 accent-good w-4 h-4 flex-shrink-0" />
-          <span class="text-xs text-slate-300 group-has-[:checked]:text-slate-500 group-has-[:checked]:line-through">${escapeHtml(rule.label)}</span>
+          <span class="text-xs text-slate-300 group-has-[:checked]:text-slate-500 group-has-[:checked]:line-through">${escapeHtml(rule.labelKey ? I18n.get(rule.labelKey) : rule.label)}</span>
         </label>
         <button data-delete-rule="${rule.id}" class="text-slate-600 hover:text-bad text-xs px-1.5 opacity-0 group-hover:opacity-100 transition">✕</button>
       </div>
@@ -194,12 +194,22 @@
       document.getElementById('resRiskAmount').textContent = '—';
       document.getElementById('resPotentialProfit').textContent = '—';
       document.getElementById('resRR').textContent = '—';
+
+      const hasUserInput = ['entryInput', 'slInput', 'tpInput'].some(id => document.getElementById(id).value !== '');
+      if (hasUserInput && result.errors && result.errors.length) {
+        errBox.innerHTML = `<p class="font-medium mb-1">${escapeHtml(I18n.get('calcErrorsTitle'))}</p><ul class="list-disc list-inside space-y-0.5">${
+          result.errors.map(code => `<li>${escapeHtml(I18n.get(code))}</li>`).join('')
+        }</ul>`;
+        errBox.classList.remove('hidden');
+      } else {
+        errBox.classList.add('hidden');
+      }
       return;
     }
 
     errBox.classList.add('hidden');
     document.getElementById('resPositionSize').textContent = result.positionSize.toLocaleString();
-    document.getElementById('resSizeUnit').textContent = result.sizeUnit;
+    document.getElementById('resSizeUnit').textContent = I18n.get(result.sizeUnit);
     document.getElementById('resRiskAmount').textContent = `$${result.riskAmount.toFixed(2)}`;
     document.getElementById('resPotentialProfit').textContent = `$${result.potentialProfit.toFixed(2)}`;
     document.getElementById('resRR').textContent = `1 : ${result.rrRatio}`;
@@ -244,14 +254,14 @@
     tbody.innerHTML = trades.sort((a, b) => b.createdAt - a.createdAt).map(t => `
       <tr class="hover:bg-panel2/40 border-b border-border/30 text-xs">
         <td class="py-2.5 font-medium text-slate-200">${escapeHtml(t.symbol)}</td>
-        <td class="py-2.5 font-semibold ${t.direction === 'long' ? 'text-good' : 'text-bad'}">${t.direction.toUpperCase()}</td>
+        <td class="py-2.5 font-semibold ${t.direction === 'long' ? 'text-good' : 'text-bad'}">${I18n.get(t.direction === 'long' ? 'dirLong' : 'dirShort').toUpperCase()}</td>
         <td class="py-2.5">$${t.riskAmount.toFixed(2)}</td>
         <td class="py-2.5">1:${t.rrRatio}</td>
-        <td class="py-2.5">${t.status === 'open' ? 'OPEN' : t.result.toUpperCase()}</td>
+        <td class="py-2.5">${t.status === 'open' ? I18n.get('statusOpen') : I18n.get(t.result === 'win' ? 'statusWin' : 'statusLoss')}</td>
         <td class="py-2.5">
           ${t.status === 'open' ? `
-            <button data-close-id="${t.id}" data-result="win" class="text-good hover:underline font-medium mr-1">Win</button>
-            <button data-close-id="${t.id}" data-result="loss" class="text-bad hover:underline font-medium">Loss</button>
+            <button data-close-id="${t.id}" data-result="win" class="text-good hover:underline font-medium mr-1">${I18n.get('actionWin')}</button>
+            <button data-close-id="${t.id}" data-result="loss" class="text-bad hover:underline font-medium">${I18n.get('actionLoss')}</button>
           ` : '—'}
         </td>
       </tr>
@@ -279,6 +289,8 @@
     });
     const inputRule = document.getElementById('newRuleInput');
     if (inputRule) inputRule.placeholder = I18n.get('addRulePlaceholder');
+    loadAccounts();
+    renderChecklist();
     recalculate();
     renderJournal();
   }
@@ -290,6 +302,60 @@
     document.getElementById('jpyToggle').addEventListener('change', recalculate);
 
     document.getElementById('langSelector').addEventListener('change', (e) => updateInterfaceLanguage(e.target.value));
+
+    document.getElementById('accountSelector').addEventListener('change', async (e) => {
+      const acc = state.accounts.find(a => a.id === e.target.value);
+      if (acc) {
+        state.activeAccount = acc;
+        await DB.Settings.set('activeAccountId', acc.id);
+        document.getElementById('capitalInput').value = acc.capital;
+        await renderJournal();
+        await recalculate();
+      }
+    });
+
+    document.getElementById('logTradeBtn').addEventListener('click', async () => {
+      if (!state.activeAccount || !state.lastCalcResult || !state.lastCalcResult.valid) return;
+      const allChecked = state.checklistRules.length > 0 && state.checklistRules.every(r => state.checkedItems.has(r.id));
+      if (!allChecked) return;
+
+      const entry = parseFloat(document.getElementById('entryInput').value);
+      const sl = parseFloat(document.getElementById('slInput').value);
+      const tp = parseFloat(document.getElementById('tpInput').value);
+      const riskPercent = parseFloat(document.getElementById('riskInput').value);
+
+      await DB.Trades.create({
+        accountId: state.activeAccount.id,
+        assetClass: state.assetClass,
+        symbol: state.assetClass.toUpperCase(),
+        direction: state.direction,
+        entry, sl, tp,
+        riskPercent,
+        riskAmount: state.lastCalcResult.riskAmount,
+        rrRatio: state.lastCalcResult.rrRatio,
+        lotSize: state.lastCalcResult.positionSize
+      });
+
+      state.checkedItems.clear();
+      renderChecklist();
+      updateLogButton();
+      await renderJournal();
+    });
+
+    document.getElementById('addRuleBtn').addEventListener('click', async () => {
+      const input = document.getElementById('newRuleInput');
+      const label = input.value.trim();
+      if (!label) return;
+      const nextOrder = state.checklistRules.length > 0 ? Math.max(...state.checklistRules.map(r => r.order)) + 1 : 1;
+      await DB.ChecklistRules.create({ label, category: 'general', isDefault: false, enabled: true, order: nextOrder });
+      input.value = '';
+      await loadChecklist();
+      recalculate();
+    });
+
+    document.getElementById('newRuleInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('addRuleBtn').click();
+    });
 
     // Tab Switching
     const tabCalcBtn = document.getElementById('tabCalcBtn');

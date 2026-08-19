@@ -60,18 +60,18 @@
       
       <section class="space-y-6">
         <div class="flex gap-1 bg-panel2 border border-border rounded-xl p-1 w-fit">
-          <button data-asset="forex" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Forex</button>
-          <button data-asset="crypto" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Crypto</button>
-          <button data-asset="indices" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Indices</button>
-          <button data-asset="gold" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Gold</button>
+          <button data-asset="forex" data-i18n="assetForex" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Forex</button>
+          <button data-asset="crypto" data-i18n="assetCrypto" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Crypto</button>
+          <button data-asset="indices" data-i18n="assetIndices" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Indices</button>
+          <button data-asset="gold" data-i18n="assetGold" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Gold</button>
         </div>
 
         <div class="bg-panel border border-border rounded-2xl p-5">
           <div class="flex items-center justify-between mb-4">
             <h2 data-i18n="calculatorTitle" class="text-sm font-semibold text-slate-200">Calculateur de Position</h2>
             <div class="flex bg-panel2 border border-border rounded-lg p-0.5">
-              <button data-dir="long" class="dir-btn px-3 py-1 text-xs font-medium rounded-md">Long</button>
-              <button data-dir="short" class="dir-btn px-3 py-1 text-xs font-medium rounded-md">Short</button>
+              <button data-dir="long" data-i18n="dirLong" class="dir-btn px-3 py-1 text-xs font-medium rounded-md">Long</button>
+              <button data-dir="short" data-i18n="dirShort" class="dir-btn px-3 py-1 text-xs font-medium rounded-md">Short</button>
             </div>
           </div>
 
@@ -114,7 +114,7 @@
           <div class="bg-panel border border-border rounded-xl p-4">
             <p data-i18n="resPositionSize" class="text-[11px] text-slate-500">Taille de position</p>
             <p id="resPositionSize" class="text-xl font-semibold text-slate-100 mt-1">—</p>
-            <p id="resSizeUnit" class="text-[11px] text-slate-500">lots</p>
+            <p id="resSizeUnit" class="text-[11px] text-slate-500"></p>
           </div>
           <div class="bg-panel border border-border rounded-xl p-4">
             <p data-i18n="resRiskAmount" class="text-[11px] text-slate-500">Montant risqué</p>
@@ -172,8 +172,9 @@
           <div id="checklistItems" class="space-y-2"></div>
           <div class="pt-2 border-t border-border/50 flex gap-2">
             <input id="newRuleInput" type="text" class="flex-1 bg-panel2 border border-border rounded-lg px-2.5 py-1.5 text-xs text-slate-200" />
+            <button id="addRuleBtn" data-i18n="addRuleBtn" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-panel2 border border-border text-slate-300 hover:text-accent hover:border-accent/30 transition">Ajouter</button>
           </div>
-          <button id="logTradeBtn" disabled class="w-full mt-2 py-2.5 rounded-xl text-sm font-semibold bg-slate-700/50 text-slate-500 cursor-not-allowed">
+          <button id="logTradeBtn" disabled class="w-full mt-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-700/50 text-slate-500 cursor-not-allowed transition">
             🔒 Complete checklist
           </button>
         </div>
@@ -203,6 +204,12 @@
             <h3 data-i18n="eduPropTitle" class="text-sm font-semibold text-slate-200">Drawdown Max &amp; Daily Loss Limit</h3>
             <p data-i18n="eduPropDesc" class="text-xs text-slate-400 whitespace-pre-line"></p>
           </div>
+        </div>
+
+        <div class="mt-4 bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
+          <h3 data-i18n="eduBiaisTitle" class="text-sm font-semibold text-slate-200">Biais Psychologiques en Trading</h3>
+          <p data-i18n="fomoDesc" class="text-xs text-slate-400"></p>
+          <p data-i18n="revengeDesc" class="text-xs text-slate-400"></p>
         </div>
       </div>
     </section>

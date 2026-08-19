@@ -105,7 +105,8 @@ const DB = (() => {
     save: (acc) => put(STORES.accounts, acc),
     create: (data) => put(STORES.accounts, {
       id: uid('acc'),
-      name: data.name || 'Main Account',
+      name: data.name || '',
+      nameKey: data.nameKey || null,
       type: data.type || 'personal',
       capital: Number(data.capital) || 10000,
       currency: data.currency || 'USD',
@@ -148,7 +149,8 @@ const DB = (() => {
     save: (rule) => put(STORES.checklistRules, rule),
     create: (data) => put(STORES.checklistRules, {
       id: uid('rule'),
-      label: data.label,
+      label: data.label || '',
+      labelKey: data.labelKey || null,
       category: data.category || 'general',
       isDefault: !!data.isDefault,
       enabled: data.enabled !== false,

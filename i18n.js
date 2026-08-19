@@ -72,7 +72,48 @@ const I18n = (() => {
 
       eduBiaisTitle: "Biais Psychologiques en Trading",
       fomoDesc: "FOMO (Fear Of Missing Out) : Peur de rater une opportunité qui pousse à entrer de façon impulsive.",
-      revengeDesc: "Revenge Trading : Ouvrir un trade impulsif après une perte pour « se refaire »."
+      revengeDesc: "Revenge Trading : Ouvrir un trade impulsif après une perte pour « se refaire ».",
+
+      assetForex: "Forex",
+      assetCrypto: "Crypto",
+      assetIndices: "Indices",
+      assetGold: "Or",
+      dirLong: "Long",
+      dirShort: "Short",
+
+      unitLots: "lots",
+      unitUnits: "unités",
+      unitContracts: "contrats",
+
+      statusOpen: "OUVERT",
+      statusWin: "GAGNÉ",
+      statusLoss: "PERDU",
+      actionWin: "Gain",
+      actionLoss: "Perte",
+
+      addRuleBtn: "Ajouter",
+
+      defaultAccountName: "Compte Démo",
+      ruleStopLoss: "Placement du Stop-Loss vérifié avant exécution",
+      rulePositionSize: "Taille de position conforme au seuil de risque max",
+      ruleNoNews: "Aucune actualité économique à fort impact dans les 15 minutes",
+      ruleTradingPlan: "Le setup respecte pleinement le plan de trading écrit",
+      ruleNoRevenge: "Non influencé par les derniers résultats (pas de Revenge Trading)",
+      ruleCalmFocused: "Calme, concentré et sans FOMO",
+      ruleDailyDrawdown: "Limite de perte journalière respectée",
+
+      errCapital: "Le capital du compte doit être supérieur à 0.",
+      errRisk: "Le risque % doit être supérieur à 0.",
+      errEntry: "Le prix d'entrée doit être supérieur à 0.",
+      errSl: "Le prix du stop-loss doit être supérieur à 0.",
+      errTp: "Le prix du take-profit doit être supérieur à 0.",
+      errEntrySlEqual: "L'entrée et le stop-loss ne peuvent pas être égaux.",
+      errLongSl: "Pour un trade LONG, le Stop-Loss doit être inférieur au prix d'Entrée.",
+      errShortSl: "Pour un trade SHORT, le Stop-Loss doit être supérieur au prix d'Entrée.",
+      errLongTp: "Pour un trade LONG, le Take-Profit doit être supérieur au prix d'Entrée.",
+      errShortTp: "Pour un trade SHORT, le Take-Profit doit être inférieur au prix d'Entrée.",
+      errUnknownAsset: "Classe d'actif inconnue.",
+      calcErrorsTitle: "Corrigez les points suivants :"
     },
 
     en: {
@@ -144,7 +185,48 @@ const I18n = (() => {
 
       eduBiaisTitle: "Psychological Biases in Trading",
       fomoDesc: "FOMO (Fear Of Missing Out): Fear of missing an opportunity leading to impulsive entries.",
-      revengeDesc: "Revenge Trading: Impulsively opening a trade after a loss to try to get even."
+      revengeDesc: "Revenge Trading: Impulsively opening a trade after a loss to try to get even.",
+
+      assetForex: "Forex",
+      assetCrypto: "Crypto",
+      assetIndices: "Indices",
+      assetGold: "Gold",
+      dirLong: "Long",
+      dirShort: "Short",
+
+      unitLots: "lots",
+      unitUnits: "units",
+      unitContracts: "contracts",
+
+      statusOpen: "OPEN",
+      statusWin: "WIN",
+      statusLoss: "LOSS",
+      actionWin: "Win",
+      actionLoss: "Loss",
+
+      addRuleBtn: "Add",
+
+      defaultAccountName: "Demo Account",
+      ruleStopLoss: "Stop-Loss placement verified before execution",
+      rulePositionSize: "Position size matches max risk threshold",
+      ruleNoNews: "No high-impact economic news within 15 minutes",
+      ruleTradingPlan: "Setup fully complies with written trading plan",
+      ruleNoRevenge: "Not influenced by recent trade results (No Revenge Trading)",
+      ruleCalmFocused: "Calm, focused, and free from FOMO",
+      ruleDailyDrawdown: "Daily drawdown limit respected",
+
+      errCapital: "Account capital must be greater than 0.",
+      errRisk: "Risk % must be greater than 0.",
+      errEntry: "Entry price must be greater than 0.",
+      errSl: "Stop-loss price must be greater than 0.",
+      errTp: "Take-profit price must be greater than 0.",
+      errEntrySlEqual: "Entry and Stop-Loss cannot be equal.",
+      errLongSl: "For a LONG trade, Stop-Loss must be below Entry.",
+      errShortSl: "For a SHORT trade, Stop-Loss must be above Entry.",
+      errLongTp: "For a LONG trade, Take-Profit must be above Entry.",
+      errShortTp: "For a SHORT trade, Take-Profit must be below Entry.",
+      errUnknownAsset: "Unknown asset class.",
+      calcErrorsTitle: "Please fix the following:"
     }
   };
 
