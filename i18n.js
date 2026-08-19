@@ -9,7 +9,27 @@ const I18n = (() => {
       tabCalc: "Calculateur & Checklist",
       tabEdu: "Guide & Éducation",
       addAccountBtn: "+ Compte",
-      
+
+      newAccountTitle: "Nouveau Compte",
+      accNameLabel: "Nom du compte",
+      accNamePlaceholder: "ex. Compte FTMO 100k",
+      accTypeLabel: "Type de compte",
+      accTypePersonal: "Personnel",
+      accTypePropfirm: "Prop Firm",
+      accCapitalLabel: "Capital initial ($)",
+      accCurrencyLabel: "Devise",
+      accDailyLossLabel: "Limite de perte journalière ($)",
+      accDailyLossHint: "Utilisée par l'Instructeur Virtuel pour vous alerter avant de la dépasser.",
+      accCreateBtn: "Créer le compte",
+      accCancelBtn: "Annuler",
+      accNameRequired: "Veuillez saisir un nom de compte.",
+
+      resultCloseTitle: "Clôturer le trade",
+      resultRMultipleLabel: "Résultat en R (ex. 2 = +2R, -1 = stop touché)",
+      resultConfirmBtn: "Confirmer",
+
+      expectancyUnit: "R / trade",
+
       calculatorTitle: "Calculateur de Position",
       capitalLabel: "Capital du compte ($)",
       riskLabel: "Risque %",
@@ -123,7 +143,27 @@ const I18n = (() => {
       tabCalc: "Calculator & Checklist",
       tabEdu: "Guide & Education",
       addAccountBtn: "+ Account",
-      
+
+      newAccountTitle: "New Account",
+      accNameLabel: "Account name",
+      accNamePlaceholder: "e.g. FTMO 100k Account",
+      accTypeLabel: "Account type",
+      accTypePersonal: "Personal",
+      accTypePropfirm: "Prop Firm",
+      accCapitalLabel: "Starting capital ($)",
+      accCurrencyLabel: "Currency",
+      accDailyLossLabel: "Daily loss limit ($)",
+      accDailyLossHint: "Used by the Virtual Instructor to warn you before you breach it.",
+      accCreateBtn: "Create account",
+      accCancelBtn: "Cancel",
+      accNameRequired: "Please enter an account name.",
+
+      resultCloseTitle: "Close trade",
+      resultRMultipleLabel: "Result in R (e.g. 2 = +2R, -1 = stop hit)",
+      resultConfirmBtn: "Confirm",
+
+      expectancyUnit: "R / trade",
+
       calculatorTitle: "Position Size Calculator",
       capitalLabel: "Account Capital ($)",
       riskLabel: "Risk %",

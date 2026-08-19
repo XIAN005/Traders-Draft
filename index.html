@@ -99,6 +99,7 @@
           <option value="en">EN</option>
         </select>
         <select id="accountSelector" class="max-w-[38vw] sm:max-w-none bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition truncate"></select>
+        <button id="addAccountBtn" data-i18n="addAccountBtn" type="button" class="bg-panel2 border border-border hover:border-accent/30 hover:text-accent text-xs font-semibold rounded-lg px-2.5 py-1.5 text-slate-300 transition shrink-0">+ Compte</button>
       </div>
     </div>
   </header>
@@ -208,6 +209,7 @@
             <h3 data-i18n="journalTitle" class="text-sm font-semibold text-slate-200">Journal de Trading</h3>
             <div class="flex gap-3 text-xs text-slate-400 shrink-0">
               <div><span data-i18n="winRateLabel">Win Rate :</span> <span id="statWinRate" class="mono text-good font-semibold">0%</span></div>
+              <div><span data-i18n="expectancyLabel">Espérance :</span> <span id="statExpectancy" class="mono text-accent font-semibold">—</span></div>
             </div>
           </div>
           <div class="overflow-x-auto -mx-1 px-1">
@@ -297,6 +299,67 @@
       <span data-i18n="checklistTitle">Checklist Pré-Trade</span>
       <span id="mobileCtaBadge" class="mono text-[10px] px-1.5 py-0.5 rounded-full bg-panel border border-border text-slate-400">0/0</span>
     </button>
+  </div>
+
+  <!-- NEW ACCOUNT MODAL -->
+  <div id="newAccountModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
+    <div id="newAccountBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4">
+      <h3 data-i18n="newAccountTitle" class="text-sm font-semibold text-slate-100">Nouveau Compte</h3>
+
+      <div>
+        <label data-i18n="accNameLabel" class="text-[11px] font-medium text-slate-500">Nom du compte</label>
+        <input id="newAccName" type="text" data-i18n-placeholder="accNamePlaceholder" class="w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" />
+      </div>
+
+      <div>
+        <label data-i18n="accTypeLabel" class="text-[11px] font-medium text-slate-500">Type de compte</label>
+        <div class="flex bg-panel2 border border-border rounded-lg p-0.5 mt-1.5">
+          <button type="button" data-acc-type="personal" data-i18n="accTypePersonal" class="acc-type-btn flex-1 py-1.5 text-xs font-semibold rounded-md transition">Personnel</button>
+          <button type="button" data-acc-type="propfirm" data-i18n="accTypePropfirm" class="acc-type-btn flex-1 py-1.5 text-xs font-semibold rounded-md transition">Prop Firm</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label data-i18n="accCapitalLabel" class="text-[11px] font-medium text-slate-500">Capital initial ($)</label>
+          <input id="newAccCapital" type="number" inputmode="decimal" value="10000" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" />
+        </div>
+        <div>
+          <label data-i18n="accCurrencyLabel" class="text-[11px] font-medium text-slate-500">Devise</label>
+          <input id="newAccCurrency" type="text" value="USD" maxlength="6" class="mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition uppercase" />
+        </div>
+      </div>
+
+      <div id="newAccDailyLossField" class="hidden">
+        <label data-i18n="accDailyLossLabel" class="text-[11px] font-medium text-slate-500">Limite de perte journalière ($)</label>
+        <input id="newAccDailyLoss" type="number" inputmode="decimal" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" />
+        <p data-i18n="accDailyLossHint" class="text-[10px] text-slate-500 mt-1.5 leading-relaxed">Utilisée par l'Instructeur Virtuel pour vous alerter avant de la dépasser.</p>
+      </div>
+
+      <p id="newAccError" class="hidden text-xs text-bad bg-bad/10 border border-bad/30 rounded-xl p-2.5"></p>
+
+      <div class="flex gap-2 pt-1">
+        <button id="newAccCancelBtn" type="button" data-i18n="accCancelBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-panel2 border border-border text-slate-300 hover:text-slate-100 transition">Annuler</button>
+        <button id="newAccCreateBtn" type="button" data-i18n="accCreateBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-accent text-slate-900 hover:bg-accent2 transition">Créer le compte</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLOSE TRADE MODAL -->
+  <div id="closeTradeModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
+    <div id="closeTradeBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4">
+      <h3 data-i18n="resultCloseTitle" class="text-sm font-semibold text-slate-100">Clôturer le trade</h3>
+      <div>
+        <label data-i18n="resultRMultipleLabel" class="text-[11px] font-medium text-slate-500 leading-relaxed">Résultat en R (ex. 2 = +2R, -1 = stop touché)</label>
+        <input id="closeTradeRInput" type="number" inputmode="decimal" step="0.1" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" />
+      </div>
+      <div class="flex gap-2 pt-1">
+        <button id="closeTradeCancelBtn" type="button" data-i18n="accCancelBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-panel2 border border-border text-slate-300 hover:text-slate-100 transition">Annuler</button>
+        <button id="closeTradeConfirmBtn" type="button" data-i18n="resultConfirmBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-accent text-slate-900 hover:bg-accent2 transition">Confirmer</button>
+      </div>
+    </div>
   </div>
 </div>
 

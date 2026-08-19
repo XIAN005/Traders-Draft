@@ -9,7 +9,9 @@
     accounts: [],
     checklistRules: [],
     checkedItems: new Set(),
-    lastCalcResult: null
+    lastCalcResult: null,
+    newAccountType: 'personal',
+    pendingCloseTradeId: null
   };
 
   await DB.open();
@@ -247,6 +249,17 @@
 
     document.getElementById('statWinRate').textContent = `${winRate}%`;
 
+    const rMultiples = closedTrades.map(t => t.rMultiple).filter(r => r !== null && r !== undefined && !isNaN(r));
+    const expectancyEl = document.getElementById('statExpectancy');
+    if (rMultiples.length) {
+      const avgR = rMultiples.reduce((sum, r) => sum + r, 0) / rMultiples.length;
+      expectancyEl.textContent = `${avgR >= 0 ? '+' : ''}${avgR.toFixed(2)} ${I18n.get('expectancyUnit')}`;
+      expectancyEl.className = `mono font-semibold ${avgR >= 0 ? 'text-good' : 'text-bad'}`;
+    } else {
+      expectancyEl.textContent = '—';
+      expectancyEl.className = 'mono text-accent font-semibold';
+    }
+
     const tbody = document.getElementById('journalTableBody');
     if (trades.length === 0) {
       tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-slate-500">${I18n.get('noTrades')}</td></tr>`;
@@ -262,33 +275,132 @@
         <td class="py-2.5">1:${t.rrRatio}</td>
         <td class="py-2.5">${t.status === 'open' ? I18n.get('statusOpen') : I18n.get(t.result === 'win' ? 'statusWin' : 'statusLoss')}</td>
         <td class="py-2.5">
-          ${t.status === 'open' ? `
-            <button data-close-id="${t.id}" data-result="win" class="text-good hover:underline font-medium mr-1">${I18n.get('actionWin')}</button>
-            <button data-close-id="${t.id}" data-result="loss" class="text-bad hover:underline font-medium">${I18n.get('actionLoss')}</button>
-          ` : '—'}
+          ${t.status === 'open'
+            ? `<button data-close-id="${t.id}" class="text-accent hover:underline font-medium">${I18n.get('resultCloseTitle')}</button>`
+            : `<span class="mono ${t.rMultiple >= 0 ? 'text-good' : 'text-bad'}">${t.rMultiple !== null && t.rMultiple !== undefined ? (t.rMultiple >= 0 ? '+' : '') + t.rMultiple + 'R' : '—'}</span>
+               <button data-delete-trade="${t.id}" aria-label="Delete trade" class="text-slate-600 hover:text-bad ml-2 align-middle">
+                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg>
+               </button>`
+          }
         </td>
       </tr>
     `).join('');
 
     tbody.querySelectorAll('[data-close-id]').forEach(btn => {
+      btn.addEventListener('click', () => openCloseTradeModal(btn.dataset.closeId));
+    });
+
+    tbody.querySelectorAll('[data-delete-trade]').forEach(btn => {
       btn.addEventListener('click', async (e) => {
-        const trade = await DB.Trades.get(e.target.dataset.closeId);
-        if (trade) {
-          trade.status = 'closed';
-          trade.result = e.target.dataset.result;
-          trade.closedAt = Date.now();
-          await DB.Trades.save(trade);
-          await renderJournal();
-          await recalculate();
-        }
+        await DB.Trades.delete(e.currentTarget.dataset.deleteTrade);
+        await renderJournal();
       });
     });
+  }
+
+  // ---- Close-trade modal (captures R-multiple) ----
+  function openCloseTradeModal(tradeId) {
+    state.pendingCloseTradeId = tradeId;
+    document.getElementById('closeTradeRInput').value = '';
+    const modal = document.getElementById('closeTradeModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.getElementById('closeTradeRInput').focus();
+  }
+
+  function closeCloseTradeModal() {
+    state.pendingCloseTradeId = null;
+    const modal = document.getElementById('closeTradeModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  async function confirmCloseTrade() {
+    const tradeId = state.pendingCloseTradeId;
+    if (!tradeId) return;
+    const rRaw = document.getElementById('closeTradeRInput').value;
+    const rMultiple = parseFloat(rRaw);
+    if (isNaN(rMultiple)) return;
+
+    const trade = await DB.Trades.get(tradeId);
+    if (trade) {
+      trade.status = 'closed';
+      trade.result = rMultiple >= 0 ? 'win' : 'loss';
+      trade.rMultiple = rMultiple;
+      trade.closedAt = Date.now();
+      await DB.Trades.save(trade);
+      closeCloseTradeModal();
+      await renderJournal();
+      await recalculate();
+    }
+  }
+
+  // ---- New-account modal ----
+  function setNewAccountType(type) {
+    state.newAccountType = type;
+    document.querySelectorAll('.acc-type-btn').forEach(btn => {
+      const active = btn.dataset.accType === type;
+      btn.className = `acc-type-btn flex-1 py-1.5 text-xs font-semibold rounded-md transition ${
+        active ? 'bg-accent/10 text-accent border border-accent/30' : 'text-slate-400 hover:text-slate-200'
+      }`;
+    });
+    const dailyLossField = document.getElementById('newAccDailyLossField');
+    if (type === 'propfirm') dailyLossField.classList.remove('hidden');
+    else dailyLossField.classList.add('hidden');
+  }
+
+  function openNewAccountModal() {
+    document.getElementById('newAccName').value = '';
+    document.getElementById('newAccCapital').value = 10000;
+    document.getElementById('newAccCurrency').value = 'USD';
+    document.getElementById('newAccDailyLoss').value = '';
+    document.getElementById('newAccError').classList.add('hidden');
+    setNewAccountType('personal');
+    const modal = document.getElementById('newAccountModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.getElementById('newAccName').focus();
+  }
+
+  function closeNewAccountModal() {
+    const modal = document.getElementById('newAccountModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  async function confirmCreateAccount() {
+    const name = document.getElementById('newAccName').value.trim();
+    const errorEl = document.getElementById('newAccError');
+    if (!name) {
+      errorEl.textContent = I18n.get('accNameRequired');
+      errorEl.classList.remove('hidden');
+      return;
+    }
+
+    const capital = parseFloat(document.getElementById('newAccCapital').value) || 10000;
+    const currency = (document.getElementById('newAccCurrency').value || 'USD').trim().toUpperCase();
+    const type = state.newAccountType;
+
+    let propFirmRules = null;
+    if (type === 'propfirm') {
+      const dailyLossLimit = parseFloat(document.getElementById('newAccDailyLoss').value);
+      propFirmRules = { dailyLossLimit: isNaN(dailyLossLimit) ? null : dailyLossLimit };
+    }
+
+    const acc = await DB.Accounts.create({ name, type, capital, currency, propFirmRules });
+    await DB.Settings.set('activeAccountId', acc.id);
+    closeNewAccountModal();
+    await loadAccounts();
+    await recalculate();
   }
 
   function updateInterfaceLanguage(lang) {
     I18n.setLanguage(lang);
     document.querySelectorAll('[data-i18n]').forEach(el => {
       el.textContent = I18n.get(el.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      el.placeholder = I18n.get(el.dataset.i18nPlaceholder);
     });
     const inputRule = document.getElementById('newRuleInput');
     if (inputRule) inputRule.placeholder = I18n.get('addRulePlaceholder');
@@ -305,6 +417,21 @@
     document.getElementById('jpyToggle').addEventListener('change', recalculate);
 
     document.getElementById('langSelector').addEventListener('change', (e) => updateInterfaceLanguage(e.target.value));
+
+    // New account modal
+    document.getElementById('addAccountBtn').addEventListener('click', openNewAccountModal);
+    document.getElementById('newAccCancelBtn').addEventListener('click', closeNewAccountModal);
+    document.getElementById('newAccountBackdrop').addEventListener('click', closeNewAccountModal);
+    document.getElementById('newAccCreateBtn').addEventListener('click', confirmCreateAccount);
+    document.querySelectorAll('.acc-type-btn').forEach(btn => btn.addEventListener('click', () => setNewAccountType(btn.dataset.accType)));
+
+    // Close trade modal
+    document.getElementById('closeTradeCancelBtn').addEventListener('click', closeCloseTradeModal);
+    document.getElementById('closeTradeBackdrop').addEventListener('click', closeCloseTradeModal);
+    document.getElementById('closeTradeConfirmBtn').addEventListener('click', confirmCloseTrade);
+    document.getElementById('closeTradeRInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') confirmCloseTrade();
+    });
 
     document.getElementById('accountSelector').addEventListener('change', async (e) => {
       const acc = state.accounts.find(a => a.id === e.target.value);
