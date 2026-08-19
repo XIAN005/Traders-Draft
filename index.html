@@ -2,7 +2,7 @@
 <html lang="fr" class="h-full">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Traft — Traders Draft</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -10,152 +10,217 @@
     theme: {
       extend: {
         colors: {
-          bg: '#0b0f14', panel: '#111823', panel2: '#161f2c',
-          border: '#233042', accent: '#22d3ee', good: '#34d399',
-          warn: '#fbbf24', bad: '#f87171'
+          bg: '#0a0e14',
+          panel: '#10161f',
+          panel2: '#161d29',
+          panel3: '#1c2432',
+          border: '#232d3d',
+          border2: '#2c3849',
+          accent: '#22d3ee',
+          accent2: '#38bdf8',
+          good: '#34d399',
+          warn: '#fbbf24',
+          bad: '#f87171'
+        },
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        },
+        boxShadow: {
+          glow: '0 0 0 1px rgba(34,211,238,0.15), 0 8px 24px -8px rgba(34,211,238,0.25)',
+          card: '0 1px 0 0 rgba(255,255,255,0.03) inset, 0 8px 24px -12px rgba(0,0,0,0.5)',
         }
       }
     }
   }
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  html { background: #0b0f14; }
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-thumb { background: #233042; border-radius: 4px; }
+  html { background: #0a0e14; }
+  body { font-feature-settings: "tnum" 1; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #232d3d; border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2c3849; }
   .num-input::-webkit-outer-spin-button, .num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .num-input { -moz-appearance: textfield; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .bg-noise {
+    background-image: radial-gradient(circle at 15% 0%, rgba(34,211,238,0.06), transparent 40%),
+                       radial-gradient(circle at 85% 15%, rgba(56,189,248,0.05), transparent 35%);
+  }
+  .card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0) 40%), #10161f;
+  }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+  /* mobile bottom sheet for checklist/sidebar */
+  @media (max-width: 1023px) {
+    #asideSheet {
+      position: fixed;
+      inset: auto 0 0 0;
+      z-index: 40;
+      max-height: 85vh;
+      transform: translateY(calc(100% - 64px));
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -8px 40px -8px rgba(0,0,0,0.6);
+    }
+    #asideSheet.sheet-open { transform: translateY(0); }
+    #asideSheetBody { overflow-y: auto; max-height: calc(85vh - 64px); }
+  }
+  @media (min-width: 1024px) {
+    #asideSheetHandle { display: none; }
+  }
+
+  .tap { -webkit-tap-highlight-color: transparent; }
 </style>
 </head>
-<body class="h-full bg-bg text-slate-200 font-sans antialiased">
+<body class="h-full bg-bg text-slate-200 font-sans antialiased bg-noise tap">
 
 <div class="min-h-full flex flex-col">
 
-  <header class="border-b border-border bg-panel/80 backdrop-blur sticky top-0 z-20">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-accent/10 border border-accent/30 flex items-center justify-center text-accent font-bold">T</div>
-        <div>
-          <h1 data-i18n="appTitle" class="text-sm font-semibold text-slate-100 leading-none">Traft</h1>
-          <p data-i18n="appSubtitle" class="text-[11px] text-slate-500 leading-none mt-0.5">Traders Draft — Risk Manager &amp; Checklist</p>
+  <!-- HEADER -->
+  <header class="border-b border-border bg-panel/90 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-3 sm:px-5 py-2.5 sm:py-3 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-accent/20 to-accent2/5 border border-accent/30 flex items-center justify-center text-accent font-extrabold text-sm shadow-glow shrink-0">T</div>
+        <div class="min-w-0">
+          <h1 data-i18n="appTitle" class="text-sm font-bold text-slate-50 leading-none tracking-tight">Traft</h1>
+          <p data-i18n="appSubtitle" class="hidden sm:block text-[11px] text-slate-500 leading-none mt-1 truncate">Traders Draft — Risk Manager &amp; Checklist</p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <select id="langSelector" class="bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300">
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <select id="langSelector" class="bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition">
           <option value="fr">🇫🇷 FR</option>
           <option value="en">🇬🇧 EN</option>
         </select>
-        <select id="accountSelector" class="bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300"></select>
+        <select id="accountSelector" class="max-w-[38vw] sm:max-w-none bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition truncate"></select>
       </div>
     </div>
   </header>
 
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-5 py-4 sm:py-6 space-y-4 sm:space-y-6 pb-28 lg:pb-6">
 
-    <div class="flex gap-2 bg-panel border border-border rounded-xl p-1">
-      <button id="tabCalcBtn" data-i18n="tabCalc" class="main-tab flex-1 py-2 text-xs font-semibold rounded-lg bg-accent/10 text-accent border border-accent/30 transition">📊 Calculateur &amp; Checklist</button>
-      <button id="tabEduBtn" data-i18n="tabEdu" class="main-tab flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition">📚 Guide &amp; Éducation</button>
+    <!-- MAIN TABS -->
+    <div class="flex gap-1 bg-panel border border-border rounded-xl p-1 shadow-card">
+      <button id="tabCalcBtn" data-i18n="tabCalc" class="main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg bg-accent/10 text-accent border border-accent/30 transition">📊 Calculateur &amp; Checklist</button>
+      <button id="tabEduBtn" data-i18n="tabEdu" class="main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition">📚 Guide &amp; Éducation</button>
     </div>
 
     <!-- MAIN CALCULATOR SECTION -->
-    <div id="mainCalcSection" class="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
-      
-      <section class="space-y-6">
-        <div class="flex gap-1 bg-panel2 border border-border rounded-xl p-1 w-fit">
-          <button data-asset="forex" data-i18n="assetForex" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Forex</button>
-          <button data-asset="crypto" data-i18n="assetCrypto" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Crypto</button>
-          <button data-asset="indices" data-i18n="assetIndices" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Indices</button>
-          <button data-asset="gold" data-i18n="assetGold" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Gold</button>
+    <div id="mainCalcSection" class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 sm:gap-6">
+
+      <section class="space-y-4 sm:space-y-6 min-w-0">
+
+        <!-- Asset tabs -->
+        <div class="flex gap-1 bg-panel2 border border-border rounded-xl p-1 overflow-x-auto no-scrollbar w-full sm:w-fit">
+          <button data-asset="forex" data-i18n="assetForex" class="asset-tab shrink-0 px-3.5 py-2 sm:py-1.5 text-xs font-medium rounded-lg">Forex</button>
+          <button data-asset="crypto" data-i18n="assetCrypto" class="asset-tab shrink-0 px-3.5 py-2 sm:py-1.5 text-xs font-medium rounded-lg">Crypto</button>
+          <button data-asset="indices" data-i18n="assetIndices" class="asset-tab shrink-0 px-3.5 py-2 sm:py-1.5 text-xs font-medium rounded-lg">Indices</button>
+          <button data-asset="gold" data-i18n="assetGold" class="asset-tab shrink-0 px-3.5 py-2 sm:py-1.5 text-xs font-medium rounded-lg">Gold</button>
         </div>
 
-        <div class="bg-panel border border-border rounded-2xl p-5">
-          <div class="flex items-center justify-between mb-4">
-            <h2 data-i18n="calculatorTitle" class="text-sm font-semibold text-slate-200">Calculateur de Position</h2>
-            <div class="flex bg-panel2 border border-border rounded-lg p-0.5">
-              <button data-dir="long" data-i18n="dirLong" class="dir-btn px-3 py-1 text-xs font-medium rounded-md">Long</button>
-              <button data-dir="short" data-i18n="dirShort" class="dir-btn px-3 py-1 text-xs font-medium rounded-md">Short</button>
+        <!-- Calculator card -->
+        <div class="card border border-border rounded-2xl p-4 sm:p-5 shadow-card">
+          <div class="flex items-center justify-between mb-4 gap-3">
+            <h2 data-i18n="calculatorTitle" class="text-sm font-semibold text-slate-100">Calculateur de Position</h2>
+            <div class="flex bg-panel2 border border-border rounded-lg p-0.5 shrink-0">
+              <button data-dir="long" data-i18n="dirLong" class="dir-btn px-3 py-1.5 sm:py-1 text-xs font-semibold rounded-md">Long</button>
+              <button data-dir="short" data-i18n="dirShort" class="dir-btn px-3 py-1.5 sm:py-1 text-xs font-semibold rounded-md">Short</button>
             </div>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             <div>
-              <label data-i18n="capitalLabel" class="text-[11px] text-slate-500">Capital ($)</label>
-              <input id="capitalInput" type="number" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" value="10000" />
+              <label data-i18n="capitalLabel" class="text-[11px] font-medium text-slate-500">Capital ($)</label>
+              <input id="capitalInput" type="number" inputmode="decimal" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" value="10000" />
             </div>
             <div>
-              <label data-i18n="riskLabel" class="text-[11px] text-slate-500">Risque %</label>
-              <input id="riskInput" type="number" step="0.1" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" value="1" />
+              <label data-i18n="riskLabel" class="text-[11px] font-medium text-slate-500">Risque %</label>
+              <input id="riskInput" type="number" inputmode="decimal" step="0.1" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" value="1" />
             </div>
             <div>
-              <label data-i18n="entryLabel" class="text-[11px] text-slate-500">Prix Entrée</label>
-              <input id="entryInput" type="number" step="any" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" placeholder="0.00" />
+              <label data-i18n="entryLabel" class="text-[11px] font-medium text-slate-500">Prix Entrée</label>
+              <input id="entryInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" placeholder="0.00" />
             </div>
             <div>
-              <label data-i18n="slLabel" class="text-[11px] text-slate-500">Stop Loss</label>
-              <input id="slInput" type="number" step="any" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" placeholder="0.00" />
+              <label data-i18n="slLabel" class="text-[11px] font-medium text-slate-500">Stop Loss</label>
+              <input id="slInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-bad/30 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-bad/40 focus:border-bad/40 transition" placeholder="0.00" />
             </div>
             <div>
-              <label data-i18n="tpLabel" class="text-[11px] text-slate-500">Take Profit</label>
-              <input id="tpInput" type="number" step="any" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" placeholder="0.00" />
+              <label data-i18n="tpLabel" class="text-[11px] font-medium text-slate-500">Take Profit</label>
+              <input id="tpInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-good/30 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-good/40 focus:border-good/40 transition" placeholder="0.00" />
             </div>
             <div id="assetExtraField" class="hidden">
-              <label data-i18n="pipValueLabel" class="text-[11px] text-slate-500">Valeur Point/Pip ($)</label>
-              <input id="assetExtraInput" type="number" step="any" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" />
+              <label data-i18n="pipValueLabel" class="text-[11px] font-medium text-slate-500">Valeur Point/Pip ($)</label>
+              <input id="assetExtraInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" />
             </div>
           </div>
-          
-          <div id="jpyToggleWrap" class="hidden items-center gap-2 mt-3">
-            <input id="jpyToggle" type="checkbox" class="rounded border-border bg-panel2 accent-accent" />
+
+          <div id="jpyToggleWrap" class="hidden items-center gap-2 mt-3.5">
+            <input id="jpyToggle" type="checkbox" class="w-4 h-4 rounded border-border bg-panel2 accent-accent" />
             <label data-i18n="jpyLabel" for="jpyToggle" class="text-xs text-slate-400">Paire en JPY (pip = 0.01)</label>
           </div>
-          
-          <div id="calcErrors" class="hidden mt-4 text-xs text-bad bg-bad/10 border border-bad/30 rounded-lg p-3"></div>
+
+          <div id="calcErrors" class="hidden mt-4 text-xs text-bad bg-bad/10 border border-bad/30 rounded-xl p-3"></div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div class="bg-panel border border-border rounded-xl p-4">
-            <p data-i18n="resPositionSize" class="text-[11px] text-slate-500">Taille de position</p>
-            <p id="resPositionSize" class="text-xl font-semibold text-slate-100 mt-1">—</p>
-            <p id="resSizeUnit" class="text-[11px] text-slate-500"></p>
+        <!-- Results -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+          <div class="card border border-border rounded-xl p-3.5 sm:p-4">
+            <p data-i18n="resPositionSize" class="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Taille de position</p>
+            <p id="resPositionSize" class="mono text-lg sm:text-xl font-bold text-slate-100 mt-1 truncate">—</p>
+            <p id="resSizeUnit" class="text-[10px] sm:text-[11px] text-slate-500"></p>
           </div>
-          <div class="bg-panel border border-border rounded-xl p-4">
-            <p data-i18n="resRiskAmount" class="text-[11px] text-slate-500">Montant risqué</p>
-            <p id="resRiskAmount" class="text-xl font-semibold text-bad mt-1">—</p>
-            <p data-i18n="atStopLoss" class="text-[11px] text-slate-500">au stop-loss</p>
+          <div class="card border border-border rounded-xl p-3.5 sm:p-4">
+            <p data-i18n="resRiskAmount" class="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Montant risqué</p>
+            <p id="resRiskAmount" class="mono text-lg sm:text-xl font-bold text-bad mt-1 truncate">—</p>
+            <p data-i18n="atStopLoss" class="text-[10px] sm:text-[11px] text-slate-500">au stop-loss</p>
           </div>
-          <div class="bg-panel border border-border rounded-xl p-4">
-            <p data-i18n="resPotentialProfit" class="text-[11px] text-slate-500">Profit potentiel</p>
-            <p id="resPotentialProfit" class="text-xl font-semibold text-good mt-1">—</p>
-            <p data-i18n="atTakeProfit" class="text-[11px] text-slate-500">au take-profit</p>
+          <div class="card border border-border rounded-xl p-3.5 sm:p-4">
+            <p data-i18n="resPotentialProfit" class="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Profit potentiel</p>
+            <p id="resPotentialProfit" class="mono text-lg sm:text-xl font-bold text-good mt-1 truncate">—</p>
+            <p data-i18n="atTakeProfit" class="text-[10px] sm:text-[11px] text-slate-500">au take-profit</p>
           </div>
-          <div class="bg-panel border border-border rounded-xl p-4">
-            <p data-i18n="resRR" class="text-[11px] text-slate-500">Ratio R:R</p>
-            <p id="resRR" class="text-xl font-semibold text-slate-100 mt-1">—</p>
-            <p data-i18n="rewardRisk" class="text-[11px] text-slate-500">rendement : risque</p>
+          <div class="card border border-border rounded-xl p-3.5 sm:p-4">
+            <p data-i18n="resRR" class="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Ratio R:R</p>
+            <p id="resRR" class="mono text-lg sm:text-xl font-bold text-accent mt-1 truncate">—</p>
+            <p data-i18n="rewardRisk" class="text-[10px] sm:text-[11px] text-slate-500">rendement : risque</p>
           </div>
         </div>
 
-        <div class="bg-panel border border-border rounded-2xl p-5">
-          <h3 data-i18n="instTitle" class="text-sm font-semibold text-slate-200 mb-2">Instructeur Virtuel</h3>
+        <!-- Instructor -->
+        <div class="card border border-border rounded-2xl p-4 sm:p-5 shadow-card">
+          <h3 data-i18n="instTitle" class="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+            Instructeur Virtuel
+          </h3>
           <div id="instructorMessages" class="space-y-2"></div>
         </div>
 
-        <div class="bg-panel border border-border rounded-2xl p-5 space-y-4">
-          <div class="flex items-center justify-between border-b border-border/50 pb-3">
+        <!-- Journal -->
+        <div class="card border border-border rounded-2xl p-4 sm:p-5 shadow-card space-y-3.5">
+          <div class="flex items-center justify-between border-b border-border/60 pb-3 gap-3">
             <h3 data-i18n="journalTitle" class="text-sm font-semibold text-slate-200">Journal de Trading</h3>
-            <div class="flex gap-4 text-xs text-slate-400">
-              <div><span data-i18n="winRateLabel">Win Rate :</span> <span id="statWinRate" class="text-good font-medium">0%</span></div>
+            <div class="flex gap-3 text-xs text-slate-400 shrink-0">
+              <div><span data-i18n="winRateLabel">Win Rate :</span> <span id="statWinRate" class="mono text-good font-semibold">0%</span></div>
             </div>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-slate-300">
-              <thead class="text-slate-500 uppercase text-[10px]">
+          <div class="overflow-x-auto -mx-1 px-1">
+            <table class="w-full text-left text-xs text-slate-300 min-w-[560px]">
+              <thead class="text-slate-500 uppercase text-[10px] tracking-wide">
                 <tr>
-                  <th data-i18n="colDate" class="py-2">Date</th>
-                  <th data-i18n="colSymbol" class="py-2">Symbole</th>
-                  <th data-i18n="colDir" class="py-2">Sens</th>
-                  <th data-i18n="colRisk" class="py-2">Risque</th>
-                  <th data-i18n="colRR" class="py-2">R:R</th>
-                  <th data-i18n="colStatus" class="py-2">Statut</th>
-                  <th data-i18n="colAction" class="py-2">Action</th>
+                  <th data-i18n="colDate" class="py-2 font-medium">Date</th>
+                  <th data-i18n="colSymbol" class="py-2 font-medium">Symbole</th>
+                  <th data-i18n="colDir" class="py-2 font-medium">Sens</th>
+                  <th data-i18n="colRisk" class="py-2 font-medium">Risque</th>
+                  <th data-i18n="colRR" class="py-2 font-medium">R:R</th>
+                  <th data-i18n="colStatus" class="py-2 font-medium">Statut</th>
+                  <th data-i18n="colAction" class="py-2 font-medium">Action</th>
                 </tr>
               </thead>
               <tbody id="journalTableBody"></tbody>
@@ -164,18 +229,27 @@
         </div>
       </section>
 
-      <aside class="space-y-6">
-        <div class="bg-panel border border-border rounded-2xl p-5 sticky top-20 space-y-4">
-          <div>
+      <!-- ASIDE / bottom sheet on mobile -->
+      <aside id="asideSheet" class="card border border-border lg:rounded-2xl shadow-card lg:sticky lg:top-20 lg:self-start bg-panel">
+        <button id="asideSheetHandle" type="button" class="w-full flex flex-col items-center gap-2 pt-3 pb-2 lg:hidden">
+          <span class="w-10 h-1 rounded-full bg-border2"></span>
+          <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+            <span data-i18n="checklistTitle">Checklist Pré-Trade</span>
+            <span id="checklistBadge" class="mono text-[10px] px-1.5 py-0.5 rounded-full bg-panel2 border border-border text-slate-400">0/0</span>
+          </span>
+        </button>
+
+        <div id="asideSheetBody" class="p-4 sm:p-5 lg:pt-5 space-y-4">
+          <div class="hidden lg:block">
             <h3 data-i18n="checklistTitle" class="text-sm font-semibold text-slate-200 mb-1">Checklist Pré-Trade</h3>
             <p data-i18n="checklistSub" class="text-[11px] text-slate-500">Toutes les cases doivent être cochées.</p>
           </div>
           <div id="checklistItems" class="space-y-2"></div>
-          <div class="pt-2 border-t border-border/50 flex gap-2">
-            <input id="newRuleInput" type="text" class="flex-1 bg-panel2 border border-border rounded-lg px-2.5 py-1.5 text-xs text-slate-200" />
-            <button id="addRuleBtn" data-i18n="addRuleBtn" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-panel2 border border-border text-slate-300 hover:text-accent hover:border-accent/30 transition">Ajouter</button>
+          <div class="pt-2 border-t border-border/60 flex gap-2">
+            <input id="newRuleInput" type="text" class="flex-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" />
+            <button id="addRuleBtn" data-i18n="addRuleBtn" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-panel2 border border-border text-slate-300 hover:text-accent hover:border-accent/30 active:scale-95 transition">Ajouter</button>
           </div>
-          <button id="logTradeBtn" disabled class="w-full mt-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-700/50 text-slate-500 cursor-not-allowed transition">
+          <button id="logTradeBtn" disabled class="w-full mt-4 py-3 rounded-xl text-sm font-bold bg-slate-700/50 text-slate-500 cursor-not-allowed transition active:scale-[0.98]">
             🔒 Complete checklist
           </button>
         </div>
@@ -183,39 +257,47 @@
     </div>
 
     <!-- EDUCATION SECTION -->
-    <section id="educationSection" class="hidden space-y-6">
-      <div class="bg-panel border border-border rounded-2xl p-6">
-        <h2 data-i18n="eduTitle" class="text-base font-semibold text-slate-100 mb-1">Lexique &amp; Concepts Clés</h2>
-        <p data-i18n="eduSub" class="text-xs text-slate-400 mb-6">Comprendre les bases fondamentales.</p>
+    <section id="educationSection" class="hidden space-y-4 sm:space-y-6">
+      <div class="card border border-border rounded-2xl p-4 sm:p-6 shadow-card">
+        <h2 data-i18n="eduTitle" class="text-base font-bold text-slate-100 mb-1">Lexique &amp; Concepts Clés</h2>
+        <p data-i18n="eduSub" class="text-xs text-slate-400 mb-5 sm:mb-6">Comprendre les bases fondamentales.</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2 hover:border-accent/20 transition">
             <h3 data-i18n="eduSlTpTitle" class="text-sm font-semibold text-slate-200">Stop-Loss &amp; Take-Profit</h3>
-            <p data-i18n="eduSlTpDesc" class="text-xs text-slate-400 whitespace-pre-line"></p>
+            <p data-i18n="eduSlTpDesc" class="text-xs text-slate-400 whitespace-pre-line leading-relaxed"></p>
           </div>
-          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
+          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2 hover:border-accent/20 transition">
             <h3 data-i18n="eduRRTitle" class="text-sm font-semibold text-slate-200">Ratio Risque / Rendement</h3>
-            <p data-i18n="eduRRDesc" class="text-xs text-slate-400"></p>
+            <p data-i18n="eduRRDesc" class="text-xs text-slate-400 leading-relaxed"></p>
           </div>
-          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
+          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2 hover:border-accent/20 transition">
             <h3 data-i18n="eduLotsTitle" class="text-sm font-semibold text-slate-200">Lots, Pips &amp; Points</h3>
-            <p data-i18n="eduLotsDesc" class="text-xs text-slate-400 whitespace-pre-line"></p>
+            <p data-i18n="eduLotsDesc" class="text-xs text-slate-400 whitespace-pre-line leading-relaxed"></p>
           </div>
-          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
+          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2 hover:border-accent/20 transition">
             <h3 data-i18n="eduPropTitle" class="text-sm font-semibold text-slate-200">Drawdown Max &amp; Daily Loss Limit</h3>
-            <p data-i18n="eduPropDesc" class="text-xs text-slate-400 whitespace-pre-line"></p>
+            <p data-i18n="eduPropDesc" class="text-xs text-slate-400 whitespace-pre-line leading-relaxed"></p>
           </div>
         </div>
 
-        <div class="mt-4 bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
+        <div class="mt-3 sm:mt-4 bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
           <h3 data-i18n="eduBiaisTitle" class="text-sm font-semibold text-slate-200">Biais Psychologiques en Trading</h3>
-          <p data-i18n="fomoDesc" class="text-xs text-slate-400"></p>
-          <p data-i18n="revengeDesc" class="text-xs text-slate-400"></p>
+          <p data-i18n="fomoDesc" class="text-xs text-slate-400 leading-relaxed"></p>
+          <p data-i18n="revengeDesc" class="text-xs text-slate-400 leading-relaxed"></p>
         </div>
       </div>
     </section>
 
   </main>
+
+  <!-- Mobile sticky CTA bar (mirrors logTradeBtn state, tap opens sheet) -->
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-panel/95 backdrop-blur-md px-3 py-2.5 safe-bottom">
+    <button id="mobileCtaBtn" type="button" class="w-full py-3 rounded-xl text-sm font-bold bg-panel2 border border-border text-slate-300 active:scale-[0.98] transition flex items-center justify-center gap-2">
+      <span data-i18n="checklistTitle">Checklist Pré-Trade</span>
+      <span id="mobileCtaBadge" class="mono text-[10px] px-1.5 py-0.5 rounded-full bg-panel border border-border text-slate-400">0/0</span>
+    </button>
+  </div>
 </div>
 
 <script src="i18n.js"></script>
@@ -224,5 +306,52 @@
 <script src="calculator.js"></script>
 <script src="instructor.js"></script>
 <script src="app.js"></script>
+<script>
+  // Pure UI glue: mobile bottom-sheet open/close + live checklist badge.
+  // Does not touch app state; only mirrors the DOM app.js already renders.
+  (function () {
+    const sheet = document.getElementById('asideSheet');
+    const handle = document.getElementById('asideSheetHandle');
+    const mobileCta = document.getElementById('mobileCtaBtn');
+    const badge = document.getElementById('checklistBadge');
+    const mobileBadge = document.getElementById('mobileCtaBadge');
+
+    function toggleSheet() {
+      sheet.classList.toggle('sheet-open');
+    }
+    handle.addEventListener('click', toggleSheet);
+    mobileCta.addEventListener('click', toggleSheet);
+
+    // close sheet after a trade is logged
+    const logBtn = document.getElementById('logTradeBtn');
+    logBtn.addEventListener('click', () => {
+      setTimeout(() => sheet.classList.remove('sheet-open'), 350);
+    });
+
+    function updateBadge() {
+      const total = document.querySelectorAll('#checklistItems .checklist-checkbox').length;
+      const checked = document.querySelectorAll('#checklistItems .checklist-checkbox:checked').length;
+      const txt = `${checked}/${total}`;
+      badge.textContent = txt;
+      mobileBadge.textContent = txt;
+
+      const complete = total > 0 && checked === total;
+      badge.className = `mono text-[10px] px-1.5 py-0.5 rounded-full border ${complete ? 'bg-good/10 border-good/30 text-good' : 'bg-panel2 border-border text-slate-400'}`;
+      mobileBadge.className = `mono text-[10px] px-1.5 py-0.5 rounded-full border ${complete ? 'bg-good/10 border-good/30 text-good' : 'bg-panel border-border text-slate-400'}`;
+
+      // mirror the real log button's enabled state onto the mobile CTA color
+      mobileCta.className = `w-full py-3 rounded-xl text-sm font-bold active:scale-[0.98] transition flex items-center justify-center gap-2 border ${
+        !logBtn.disabled ? 'bg-good/10 border-good/30 text-good' : 'bg-panel2 border-border text-slate-300'
+      }`;
+    }
+
+    const observer = new MutationObserver(updateBadge);
+    observer.observe(document.getElementById('checklistItems'), { childList: true, subtree: true, attributes: true });
+    const btnObserver = new MutationObserver(updateBadge);
+    btnObserver.observe(logBtn, { attributes: true, attributeFilter: ['disabled', 'class'] });
+
+    updateBadge();
+  })();
+</script>
 </body>
 </html>
