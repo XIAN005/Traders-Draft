@@ -247,12 +247,13 @@
 
     const tbody = document.getElementById('journalTableBody');
     if (trades.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-500">${I18n.get('noTrades')}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-slate-500">${I18n.get('noTrades')}</td></tr>`;
       return;
     }
 
     tbody.innerHTML = trades.sort((a, b) => b.createdAt - a.createdAt).map(t => `
       <tr class="hover:bg-panel2/40 border-b border-border/30 text-xs">
+        <td class="py-2.5 text-slate-400 whitespace-nowrap">${formatDateTime(t.createdAt)}</td>
         <td class="py-2.5 font-medium text-slate-200">${escapeHtml(t.symbol)}</td>
         <td class="py-2.5 font-semibold ${t.direction === 'long' ? 'text-good' : 'text-bad'}">${I18n.get(t.direction === 'long' ? 'dirLong' : 'dirShort').toUpperCase()}</td>
         <td class="py-2.5">$${t.riskAmount.toFixed(2)}</td>
@@ -375,6 +376,16 @@
       eduSec.classList.remove('hidden');
       tabEduBtn.className = "main-tab flex-1 py-2 text-xs font-semibold rounded-lg bg-accent/10 text-accent border border-accent/30 transition";
       tabCalcBtn.className = "main-tab flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition";
+    });
+  }
+
+  function formatDateTime(timestamp) {
+    if (!timestamp) return '—';
+    const locale = I18n.getCurrentLang() === 'fr' ? 'fr-FR' : 'en-US';
+    const date = new Date(timestamp);
+    return date.toLocaleString(locale, {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
     });
   }
 
