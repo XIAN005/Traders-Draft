@@ -1,16 +1,14 @@
 /**
- * Trader$ Draft — Data Layer (IndexedDB)
- * Zero-backend persistence: accounts, trades, checklist rules, settings.
- * All methods return Promises. No external deps.
+ * Traft — Data Layer (IndexedDB)
  */
 const DB = (() => {
-  const DB_NAME = 'smarttrade_db';
+  const DB_NAME = 'traft_db';
   const DB_VERSION = 1;
   const STORES = {
-    accounts: 'accounts',       // { id, name, type, capital, currency, propFirmRules, createdAt }
-    trades: 'trades',           // { id, accountId, assetClass, symbol, direction, entry, sl, tp, riskPercent, riskAmount, rrRatio, lotSize, status, result, rMultiple, createdAt, closedAt, notes }
-    checklistRules: 'checklistRules', // { id, label, category, isDefault, enabled, order }
-    settings: 'settings'        // { key, value }  (singleton-style k/v store)
+    accounts: 'accounts',
+    trades: 'trades',
+    checklistRules: 'checklistRules',
+    settings: 'settings'
   };
 
   let dbInstance = null;
@@ -22,7 +20,6 @@ const DB = (() => {
 
       req.onupgradeneeded = (e) => {
         const db = e.target.result;
-
         if (!db.objectStoreNames.contains(STORES.accounts)) {
           const s = db.createObjectStore(STORES.accounts, { keyPath: 'id' });
           s.createIndex('createdAt', 'createdAt');
@@ -53,8 +50,6 @@ const DB = (() => {
   function tx(storeName, mode = 'readonly') {
     return open().then(db => db.transaction(storeName, mode).objectStore(storeName));
   }
-
-  // Generic CRUD -------------------------------------------------------
 
   async function put(storeName, value) {
     const store = await tx(storeName, 'readwrite');
@@ -102,10 +97,7 @@ const DB = (() => {
     });
   }
 
-  // Domain helpers -------------------------------------------------------
-
-  const uid = (prefix = 'id') =>
-    `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+  const uid = (prefix = 'id') => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
   const Accounts = {
     all: () => getAll(STORES.accounts),
@@ -114,10 +106,10 @@ const DB = (() => {
     create: (data) => put(STORES.accounts, {
       id: uid('acc'),
       name: data.name || 'Main Account',
-      type: data.type || 'personal', // 'personal' | 'propfirm'
+      type: data.type || 'personal',
       capital: Number(data.capital) || 10000,
       currency: data.currency || 'USD',
-      propFirmRules: data.propFirmRules || null, // { dailyLossLimit, maxDrawdown, profitTarget }
+      propFirmRules: data.propFirmRules || null,
       createdAt: Date.now()
     }),
     delete: (id) => remove(STORES.accounts, id)
@@ -133,7 +125,7 @@ const DB = (() => {
       accountId: data.accountId,
       assetClass: data.assetClass,
       symbol: data.symbol,
-      direction: data.direction, // 'long' | 'short'
+      direction: data.direction,
       entry: Number(data.entry),
       sl: Number(data.sl),
       tp: Number(data.tp),
@@ -141,8 +133,8 @@ const DB = (() => {
       riskAmount: Number(data.riskAmount),
       rrRatio: Number(data.rrRatio),
       lotSize: Number(data.lotSize),
-      status: 'open', // 'open' | 'closed'
-      result: null,   // 'win' | 'loss' | 'breakeven'
+      status: 'open',
+      result: null,
       rMultiple: null,
       createdAt: Date.now(),
       closedAt: null,

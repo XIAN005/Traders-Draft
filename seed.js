@@ -1,22 +1,21 @@
 /**
- * Trader$ Draft — First-run seed data
+ * Traft — Seed initial
  */
 const Seed = (() => {
   const DEFAULT_CHECKLIST = [
-    { label: 'Stop-Loss is placed on the chart before entry', category: 'risk', order: 1 },
-    { label: 'Position size respects my max risk % per trade', category: 'risk', order: 2 },
-    { label: 'No major high-impact news in the next 15 minutes', category: 'market', order: 3 },
-    { label: 'Trade aligns with my written strategy / setup criteria', category: 'strategy', order: 4 },
-    { label: 'I am not revenge-trading a previous loss', category: 'psychology', order: 5 },
-    { label: 'My emotional state is neutral (not FOMO, not angry)', category: 'psychology', order: 6 },
-    { label: 'Daily loss limit has not been reached', category: 'risk', order: 7 }
+    { label: 'Stop-Loss placement verified before execution', category: 'risk', order: 1 },
+    { label: 'Position size matches max risk threshold', category: 'risk', order: 2 },
+    { label: 'No high-impact economic news within 15 minutes', category: 'market', order: 3 },
+    { label: 'Setup fully complies with written trading plan', category: 'strategy', order: 4 },
+    { label: 'Not influenced by recent trade results (No Revenge Trading)', category: 'psychology', order: 5 },
+    { label: 'Calm, focused, and free from FOMO', category: 'psychology', order: 6 },
+    { label: 'Daily drawdown limit respected', category: 'risk', order: 7 }
   ];
 
   async function runIfNeeded() {
     const seeded = await DB.Settings.get('seeded_v1', false);
     if (seeded) return;
 
-    // Seed checklist rules
     const existingRules = await DB.ChecklistRules.all();
     if (existingRules.length === 0) {
       for (const rule of DEFAULT_CHECKLIST) {
@@ -24,7 +23,6 @@ const Seed = (() => {
       }
     }
 
-    // Seed a default account
     const existingAccounts = await DB.Accounts.all();
     if (existingAccounts.length === 0) {
       const acc = await DB.Accounts.create({
