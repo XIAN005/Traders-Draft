@@ -1,220 +1,122 @@
 <!DOCTYPE html>
-<html lang="fr" class="h-full">
+<html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Traft — Traders Draft</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          bg: '#0b0f14', panel: '#111823', panel2: '#161f2c',
-          border: '#233042', accent: '#22d3ee', good: '#34d399',
-          warn: '#fbbf24', bad: '#f87171'
-        }
-      }
-    }
-  }
-</script>
-<style>
-  html { background: #0b0f14; }
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-thumb { background: #233042; border-radius: 4px; }
-  .num-input::-webkit-outer-spin-button, .num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traft — Risk Manager & Checklist</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="h-full bg-bg text-slate-200 font-sans antialiased">
-
-<div class="min-h-full flex flex-col">
-
-  <header class="border-b border-border bg-panel/80 backdrop-blur sticky top-0 z-20">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-accent/10 border border-accent/30 flex items-center justify-center text-accent font-bold">T</div>
-        <div>
-          <h1 data-i18n="appTitle" class="text-sm font-semibold text-slate-100 leading-none">Traft</h1>
-          <p data-i18n="appSubtitle" class="text-[11px] text-slate-500 leading-none mt-0.5">Traders Draft — Risk Manager &amp; Checklist</p>
-        </div>
+<body>
+  <header class="navbar">
+    <div class="logo-container">
+      <div class="logo-icon">T</div>
+      <div>
+        <h1 class="logo-title">Traft</h1>
+        <p class="logo-subtitle">Traders Draft — Risk Manager & Checklist</p>
       </div>
-      <div class="flex items-center gap-2">
-        <select id="langSelector" class="bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300">
-          <option value="fr">🇫🇷 FR</option>
-          <option value="en">🇬🇧 EN</option>
-        </select>
-        <select id="accountSelector" class="bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300"></select>
-      </div>
+    </div>
+    <div class="header-controls">
+      <select id="langSelect" class="select-control">
+        <option value="fr" selected>🇫🇷 FR</option>
+        <option value="en">🇬🇧 EN</option>
+      </select>
     </div>
   </header>
 
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
+  <main class="main-container">
+    <nav class="nav-tabs">
+      <button class="tab-btn active">📊 Calculateur & Checklist</button>
+      <button class="tab-btn">📚 Guide & Éducation</button>
+    </nav>
 
-    <div class="flex gap-2 bg-panel border border-border rounded-xl p-1">
-      <button id="tabCalcBtn" data-i18n="tabCalc" class="main-tab flex-1 py-2 text-xs font-semibold rounded-lg bg-accent/10 text-accent border border-accent/30 transition">📊 Calculateur &amp; Checklist</button>
-      <button id="tabEduBtn" data-i18n="tabEdu" class="main-tab flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition">📚 Guide &amp; Éducation</button>
+    <div class="asset-selector">
+      <button class="asset-btn" data-asset="forex">Forex</button>
+      <button class="asset-btn active" data-asset="crypto">Crypto</button>
+      <button class="asset-btn" data-asset="indices">Indices</button>
+      <button class="asset-btn" data-asset="gold">Gold</button>
     </div>
 
-    <!-- MAIN CALCULATOR SECTION -->
-    <div id="mainCalcSection" class="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
-      
-      <section class="space-y-6">
-        <div class="flex gap-1 bg-panel2 border border-border rounded-xl p-1 w-fit">
-          <button data-asset="forex" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Forex</button>
-          <button data-asset="crypto" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Crypto</button>
-          <button data-asset="indices" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Indices</button>
-          <button data-asset="gold" class="asset-tab px-3 py-1.5 text-xs font-medium rounded-lg">Gold</button>
-        </div>
-
-        <div class="bg-panel border border-border rounded-2xl p-5">
-          <div class="flex items-center justify-between mb-4">
-            <h2 data-i18n="calculatorTitle" class="text-sm font-semibold text-slate-200">Calculateur de Position</h2>
-            <div class="flex bg-panel2 border border-border rounded-lg p-0.5">
-              <button data-dir="long" class="dir-btn px-3 py-1 text-xs font-medium rounded-md">Long</button>
-              <button data-dir="short" class="dir-btn px-3 py-1 text-xs font-medium rounded-md">Short</button>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            <div>
-              <label data-i18n="capitalLabel" class="text-[11px] text-slate-500">Capital ($)</label>
-              <input id="capitalInput" type="number" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" value="10000" />
-            </div>
-            <div>
-              <label data-i18n="riskLabel" class="text-[11px] text-slate-500">Risque %</label>
-              <input id="riskInput" type="number" step="0.1" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" value="1" />
-            </div>
-            <div>
-              <label data-i18n="entryLabel" class="text-[11px] text-slate-500">Prix Entrée</label>
-              <input id="entryInput" type="number" step="any" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" placeholder="0.00" />
-            </div>
-            <div>
-              <label data-i18n="slLabel" class="text-[11px] text-slate-500">Stop Loss</label>
-              <input id="slInput" type="number" step="any" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" placeholder="0.00" />
-            </div>
-            <div>
-              <label data-i18n="tpLabel" class="text-[11px] text-slate-500">Take Profit</label>
-              <input id="tpInput" type="number" step="any" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" placeholder="0.00" />
-            </div>
-            <div id="assetExtraField" class="hidden">
-              <label data-i18n="pipValueLabel" class="text-[11px] text-slate-500">Valeur Point/Pip ($)</label>
-              <input id="assetExtraInput" type="number" step="any" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" />
-            </div>
-          </div>
-          
-          <div id="jpyToggleWrap" class="hidden items-center gap-2 mt-3">
-            <input id="jpyToggle" type="checkbox" class="rounded border-border bg-panel2 accent-accent" />
-            <label data-i18n="jpyLabel" for="jpyToggle" class="text-xs text-slate-400">Paire en JPY (pip = 0.01)</label>
-          </div>
-          
-          <div id="calcErrors" class="hidden mt-4 text-xs text-bad bg-bad/10 border border-bad/30 rounded-lg p-3"></div>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div class="bg-panel border border-border rounded-xl p-4">
-            <p data-i18n="resPositionSize" class="text-[11px] text-slate-500">Taille de position</p>
-            <p id="resPositionSize" class="text-xl font-semibold text-slate-100 mt-1">—</p>
-            <p id="resSizeUnit" class="text-[11px] text-slate-500">lots</p>
-          </div>
-          <div class="bg-panel border border-border rounded-xl p-4">
-            <p data-i18n="resRiskAmount" class="text-[11px] text-slate-500">Montant risqué</p>
-            <p id="resRiskAmount" class="text-xl font-semibold text-bad mt-1">—</p>
-            <p data-i18n="atStopLoss" class="text-[11px] text-slate-500">au stop-loss</p>
-          </div>
-          <div class="bg-panel border border-border rounded-xl p-4">
-            <p data-i18n="resPotentialProfit" class="text-[11px] text-slate-500">Profit potentiel</p>
-            <p id="resPotentialProfit" class="text-xl font-semibold text-good mt-1">—</p>
-            <p data-i18n="atTakeProfit" class="text-[11px] text-slate-500">au take-profit</p>
-          </div>
-          <div class="bg-panel border border-border rounded-xl p-4">
-            <p data-i18n="resRR" class="text-[11px] text-slate-500">Ratio R:R</p>
-            <p id="resRR" class="text-xl font-semibold text-slate-100 mt-1">—</p>
-            <p data-i18n="rewardRisk" class="text-[11px] text-slate-500">rendement : risque</p>
+    <div class="content-grid">
+      <!-- Section Calculateur -->
+      <section class="calculator-card">
+        <div class="card-header">
+          <h2>Calculateur de Position</h2>
+          <div class="trade-type-selector">
+            <button class="trade-type-btn active" data-type="long">Long</button>
+            <button class="trade-type-btn" data-type="short">Short</button>
           </div>
         </div>
 
-        <div class="bg-panel border border-border rounded-2xl p-5">
-          <h3 data-i18n="instTitle" class="text-sm font-semibold text-slate-200 mb-2">Instructeur Virtuel</h3>
-          <div id="instructorMessages" class="space-y-2"></div>
+        <div class="inputs-grid">
+          <div class="input-group">
+            <label for="capitalInput">Capital du compte ($)</label>
+            <input type="number" id="capitalInput" value="100000" step="any">
+          </div>
+          <div class="input-group">
+            <label for="riskInput">Risque %</label>
+            <input type="number" id="riskInput" value="1" step="any">
+          </div>
+          <div class="input-group">
+            <label for="entryInput">Prix Entrée</label>
+            <input type="number" id="entryInput" placeholder="0.00" step="any">
+          </div>
+          <div class="input-group">
+            <label for="slInput">Stop Loss</label>
+            <input type="number" id="slInput" placeholder="0.00" step="any">
+          </div>
+          <div class="input-group">
+            <label for="tpInput">Take Profit</label>
+            <input type="number" id="tpInput" placeholder="0.00" step="any">
+          </div>
         </div>
 
-        <div class="bg-panel border border-border rounded-2xl p-5 space-y-4">
-          <div class="flex items-center justify-between border-b border-border/50 pb-3">
-            <h3 data-i18n="journalTitle" class="text-sm font-semibold text-slate-200">Journal de Trading</h3>
-            <div class="flex gap-4 text-xs text-slate-400">
-              <div><span data-i18n="winRateLabel">Win Rate :</span> <span id="statWinRate" class="text-good font-medium">0%</span></div>
-            </div>
+        <div class="results-grid">
+          <div class="result-box">
+            <span class="result-label">Taille de position</span>
+            <span class="result-value" id="resPositionSize">—</span>
+            <span class="result-unit">units</span>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-slate-300">
-              <thead class="text-slate-500 uppercase text-[10px]">
-                <tr>
-                  <th data-i18n="colSymbol" class="py-2">Symbole</th>
-                  <th data-i18n="colDir" class="py-2">Sens</th>
-                  <th data-i18n="colRisk" class="py-2">Risque</th>
-                  <th data-i18n="colRR" class="py-2">R:R</th>
-                  <th data-i18n="colStatus" class="py-2">Statut</th>
-                  <th data-i18n="colAction" class="py-2">Action</th>
-                </tr>
-              </thead>
-              <tbody id="journalTableBody"></tbody>
-            </table>
+          <div class="result-box">
+            <span class="result-label">Montant risqué</span>
+            <span class="result-value text-red" id="resRiskAmount">—</span>
+            <span class="result-subtext">au stop-loss</span>
           </div>
+          <div class="result-box">
+            <span class="result-label">Profit potentiel</span>
+            <span class="result-value text-green" id="resPotentialProfit">—</span>
+            <span class="result-subtext">au take-profit</span>
+          </div>
+          <div class="result-box">
+            <span class="result-label">Ratio R:R</span>
+            <span class="result-value" id="resRR">—</span>
+            <span class="result-subtext">rendement : risque</span>
+          </div>
+        </div>
+
+        <div class="instructor-card">
+          <h3>Instructeur Virtuel</h3>
+          <p id="instructorText">Remplissez les détails du trade pour recevoir une analyse du risque en direct.</p>
         </div>
       </section>
 
-      <aside class="space-y-6">
-        <div class="bg-panel border border-border rounded-2xl p-5 sticky top-20 space-y-4">
-          <div>
-            <h3 data-i18n="checklistTitle" class="text-sm font-semibold text-slate-200 mb-1">Checklist Pré-Trade</h3>
-            <p data-i18n="checklistSub" class="text-[11px] text-slate-500">Toutes les cases doivent être cochées.</p>
-          </div>
-          <div id="checklistItems" class="space-y-2"></div>
-          <div class="pt-2 border-t border-border/50 flex gap-2">
-            <input id="newRuleInput" type="text" class="flex-1 bg-panel2 border border-border rounded-lg px-2.5 py-1.5 text-xs text-slate-200" />
-          </div>
-          <button id="logTradeBtn" disabled class="w-full mt-2 py-2.5 rounded-xl text-sm font-semibold bg-slate-700/50 text-slate-500 cursor-not-allowed">
-            🔒 Complete checklist
-          </button>
+      <!-- Section Checklist -->
+      <section class="checklist-card">
+        <h2>Checklist Pré-Trade</h2>
+        <p class="checklist-desc">Toutes les cases doivent être cochées pour enregistrer le trade.</p>
+        
+        <div id="checklistItems" class="checklist-items"></div>
+
+        <div class="add-rule-box">
+          <input type="text" id="customRuleInput" placeholder="Ajouter une règle personnalisée...">
         </div>
-      </aside>
+
+        <button id="saveTradeBtn" class="btn-primary" disabled>
+          🔒 Complétez la checklist pour enregistrer
+        </button>
+      </section>
     </div>
-
-    <!-- EDUCATION SECTION -->
-    <section id="educationSection" class="hidden space-y-6">
-      <div class="bg-panel border border-border rounded-2xl p-6">
-        <h2 data-i18n="eduTitle" class="text-base font-semibold text-slate-100 mb-1">Lexique &amp; Concepts Clés</h2>
-        <p data-i18n="eduSub" class="text-xs text-slate-400 mb-6">Comprendre les bases fondamentales.</p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
-            <h3 data-i18n="eduSlTpTitle" class="text-sm font-semibold text-slate-200">Stop-Loss &amp; Take-Profit</h3>
-            <p data-i18n="eduSlTpDesc" class="text-xs text-slate-400 whitespace-pre-line"></p>
-          </div>
-          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
-            <h3 data-i18n="eduRRTitle" class="text-sm font-semibold text-slate-200">Ratio Risque / Rendement</h3>
-            <p data-i18n="eduRRDesc" class="text-xs text-slate-400"></p>
-          </div>
-          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
-            <h3 data-i18n="eduLotsTitle" class="text-sm font-semibold text-slate-200">Lots, Pips &amp; Points</h3>
-            <p data-i18n="eduLotsDesc" class="text-xs text-slate-400 whitespace-pre-line"></p>
-          </div>
-          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
-            <h3 data-i18n="eduPropTitle" class="text-sm font-semibold text-slate-200">Drawdown Max &amp; Daily Loss Limit</h3>
-            <p data-i18n="eduPropDesc" class="text-xs text-slate-400 whitespace-pre-line"></p>
-          </div>
-        </div>
-      </div>
-    </section>
-
   </main>
-</div>
 
-<script src="i18n.js"></script>
-<script src="db.js"></script>
-<script src="seed.js"></script>
-<script src="calculator.js"></script>
-<script src="instructor.js"></script>
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
