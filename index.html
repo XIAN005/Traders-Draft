@@ -43,7 +43,7 @@
           <option value="fr">🇫🇷 FR</option>
           <option value="en">🇬🇧 EN</option>
         </select>
-        <!-- Le sélecteur démo a été supprimé pour nettoyer la barre de navigation -->
+        <select id="accountSelector" class="bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300"></select>
       </div>
     </div>
   </header>
@@ -78,7 +78,7 @@
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div>
               <label data-i18n="capitalLabel" class="text-[11px] text-slate-500">Capital ($)</label>
-              <input id="capitalInput" type="number" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" value="100000" />
+              <input id="capitalInput" type="number" class="num-input w-full mt-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm" value="10000" />
             </div>
             <div>
               <label data-i18n="riskLabel" class="text-[11px] text-slate-500">Risque %</label>
