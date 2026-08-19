@@ -34,6 +34,9 @@
     if (state.accounts.length === 0) {
       sel.innerHTML = `<option value="">${I18n.get('instNoAccount')}</option>`;
       document.getElementById('capitalInput').value = '';
+      const delBtn0 = document.getElementById('deleteAccountBtn');
+      delBtn0.disabled = true;
+      delBtn0.title = I18n.get('delAccountLastOne');
       return;
     }
 
@@ -46,7 +49,9 @@
       renderJournal();
     }
 
-    document.getElementById('deleteAccountBtn').disabled = state.accounts.length <= 1;
+    const delBtn = document.getElementById('deleteAccountBtn');
+    delBtn.disabled = state.accounts.length <= 1;
+    delBtn.title = state.accounts.length <= 1 ? I18n.get('delAccountLastOne') : I18n.get('delAccountTitle');
   }
 
   async function loadChecklist() {
@@ -488,21 +493,35 @@
 
   async function confirmDeleteAccount() {
     const accountId = state.pendingDeleteAccountId;
-    if (!accountId || state.accounts.length <= 1) return;
-
-    const trades = await DB.Trades.byAccount(accountId);
-    for (const t of trades) {
-      await DB.Trades.delete(t.id);
+    if (!accountId) {
+      console.warn('[Traft] No pending account to delete.');
+      return;
     }
-    await DB.Accounts.delete(accountId);
+    if (state.accounts.length <= 1) {
+      console.warn('[Traft] Refusing to delete the last remaining account.');
+      closeDeleteAccountModal();
+      return;
+    }
 
-    const remaining = await DB.Accounts.all();
-    const nextActive = remaining[0] || null;
-    if (nextActive) await DB.Settings.set('activeAccountId', nextActive.id);
+    try {
+      const trades = await DB.Trades.byAccount(accountId);
+      for (const t of trades) {
+        await DB.Trades.delete(t.id);
+      }
+      await DB.Accounts.delete(accountId);
 
-    closeDeleteAccountModal();
-    await loadAccounts();
-    await recalculate();
+      const remaining = await DB.Accounts.all();
+      const nextActive = remaining[0] || null;
+      if (nextActive) await DB.Settings.set('activeAccountId', nextActive.id);
+      else await DB.Settings.set('activeAccountId', null);
+
+      closeDeleteAccountModal();
+      await loadAccounts();
+      await recalculate();
+    } catch (err) {
+      console.error('[Traft] Failed to delete account:', err);
+      closeDeleteAccountModal();
+    }
   }
 
   function updateInterfaceLanguage(lang) {
