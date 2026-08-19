@@ -10,24 +10,24 @@
     theme: {
       extend: {
         colors: {
-          bg: '#0a0e14',
-          panel: '#10161f',
-          panel2: '#161d29',
-          panel3: '#1c2432',
-          border: '#232d3d',
-          border2: '#2c3849',
-          accent: '#22d3ee',
-          accent2: '#38bdf8',
-          good: '#34d399',
-          warn: '#fbbf24',
-          bad: '#f87171'
+          bg: '#0c0d0f',
+          panel: '#131417',
+          panel2: '#1a1b1f',
+          panel3: '#202226',
+          border: '#26282d',
+          border2: '#323439',
+          accent: '#d4a94f',
+          accent2: '#e8c574',
+          good: '#4fae7e',
+          warn: '#d4a94f',
+          bad: '#c4685a'
         },
         fontFamily: {
           sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         },
         boxShadow: {
-          glow: '0 0 0 1px rgba(34,211,238,0.15), 0 8px 24px -8px rgba(34,211,238,0.25)',
-          card: '0 1px 0 0 rgba(255,255,255,0.03) inset, 0 8px 24px -12px rgba(0,0,0,0.5)',
+          glow: '0 0 0 1px rgba(212,169,79,0.18), 0 8px 24px -8px rgba(212,169,79,0.2)',
+          card: '0 1px 0 0 rgba(255,255,255,0.025) inset, 0 8px 24px -12px rgba(0,0,0,0.55)',
         }
       }
     }
@@ -36,7 +36,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  html { background: #0a0e14; }
+  html { background: #0c0d0f; }
   body { font-feature-settings: "tnum" 1; }
   .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -49,11 +49,11 @@
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
   .bg-noise {
-    background-image: radial-gradient(circle at 15% 0%, rgba(34,211,238,0.06), transparent 40%),
-                       radial-gradient(circle at 85% 15%, rgba(56,189,248,0.05), transparent 35%);
+    background-image: radial-gradient(circle at 15% 0%, rgba(212,169,79,0.05), transparent 40%),
+                       radial-gradient(circle at 85% 15%, rgba(212,169,79,0.03), transparent 35%);
   }
   .card {
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0) 40%), #10161f;
+    background: linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0) 40%), #131417;
   }
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 
@@ -94,9 +94,9 @@
         </div>
       </div>
       <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <select id="langSelector" class="bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition">
-          <option value="fr">🇫🇷 FR</option>
-          <option value="en">🇬🇧 EN</option>
+        <select id="langSelector" class="bg-panel2 border border-border text-xs font-medium rounded-lg px-2 py-1.5 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition">
+          <option value="fr">FR</option>
+          <option value="en">EN</option>
         </select>
         <select id="accountSelector" class="max-w-[38vw] sm:max-w-none bg-panel2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition truncate"></select>
       </div>
@@ -107,8 +107,8 @@
 
     <!-- MAIN TABS -->
     <div class="flex gap-1 bg-panel border border-border rounded-xl p-1 shadow-card">
-      <button id="tabCalcBtn" data-i18n="tabCalc" class="main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg bg-accent/10 text-accent border border-accent/30 transition">📊 Calculateur &amp; Checklist</button>
-      <button id="tabEduBtn" data-i18n="tabEdu" class="main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition">📚 Guide &amp; Éducation</button>
+      <button id="tabCalcBtn" data-i18n="tabCalc" class="main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg bg-accent/10 text-accent border border-accent/30 transition">Calculateur &amp; Checklist</button>
+      <button id="tabEduBtn" data-i18n="tabEdu" class="main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition">Guide &amp; Éducation</button>
     </div>
 
     <!-- MAIN CALCULATOR SECTION -->
@@ -250,7 +250,7 @@
             <button id="addRuleBtn" data-i18n="addRuleBtn" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-panel2 border border-border text-slate-300 hover:text-accent hover:border-accent/30 active:scale-95 transition">Ajouter</button>
           </div>
           <button id="logTradeBtn" disabled class="w-full mt-4 py-3 rounded-xl text-sm font-bold bg-slate-700/50 text-slate-500 cursor-not-allowed transition active:scale-[0.98]">
-            🔒 Complete checklist
+            Complete checklist
           </button>
         </div>
       </aside>

@@ -6,8 +6,8 @@ const I18n = (() => {
     fr: {
       appTitle: "Traft",
       appSubtitle: "Traders Draft — Risk Manager & Checklist",
-      tabCalc: "📊 Calculateur & Checklist",
-      tabEdu: "📚 Guide & Éducation",
+      tabCalc: "Calculateur & Checklist",
+      tabEdu: "Guide & Éducation",
       addAccountBtn: "+ Compte",
       
       calculatorTitle: "Calculateur de Position",
@@ -29,7 +29,7 @@ const I18n = (() => {
 
       instTitle: "Instructeur Virtuel",
       instEmpty: "Remplissez les détails du trade pour recevoir une analyse du risque en direct.",
-      instNoAccount: "⚠️ Aucun compte sélectionné. Veuillez créer ou sélectionner un compte.",
+      instNoAccount: "Aucun compte sélectionné. Veuillez créer ou sélectionner un compte.",
       instOk: "✓ Aucun problème détecté avec cette configuration.",
       instBadRR: "Ratio R:R défavorable. Vous risquez plus que ce que vous pouvez gagner.",
       instWarnRR: "R:R inférieur au minimum recommandé de 1:1.5.",
@@ -40,9 +40,9 @@ const I18n = (() => {
       checklistTitle: "Checklist Pré-Trade",
       checklistSub: "Toutes les cases doivent être cochées pour enregistrer le trade.",
       addRulePlaceholder: "Ajouter une règle personnalisée...",
-      logBtnLocked: "🔒 Complétez la checklist pour enregistrer",
-      logBtnUnlocked: "✅ Enregistrer le trade au journal",
-      logBtnNoAccount: "🔒 Créez un compte d'abord",
+      logBtnLocked: "Complétez la checklist pour enregistrer",
+      logBtnUnlocked: "Enregistrer le trade au journal",
+      logBtnNoAccount: "Créez un compte d'abord",
 
       journalTitle: "Journal de Trading",
       winRateLabel: "Win Rate :",
@@ -120,8 +120,8 @@ const I18n = (() => {
     en: {
       appTitle: "Traft",
       appSubtitle: "Traders Draft — Risk Manager & Checklist",
-      tabCalc: "📊 Calculator & Checklist",
-      tabEdu: "📚 Guide & Education",
+      tabCalc: "Calculator & Checklist",
+      tabEdu: "Guide & Education",
       addAccountBtn: "+ Account",
       
       calculatorTitle: "Position Size Calculator",
@@ -143,7 +143,7 @@ const I18n = (() => {
 
       instTitle: "Virtual Instructor",
       instEmpty: "Fill in trade details to receive live risk feedback.",
-      instNoAccount: "⚠️ No active account selected. Please create or select an account.",
+      instNoAccount: "No active account selected. Please create or select an account.",
       instOk: "✓ No issues detected with this setup.",
       instBadRR: "Unfavorable R:R. You are risking more than you can gain.",
       instWarnRR: "R:R is below the recommended 1:1.5 minimum.",
@@ -154,9 +154,9 @@ const I18n = (() => {
       checklistTitle: "Pre-Trade Checklist",
       checklistSub: "All items must be checked to unlock trade logging.",
       addRulePlaceholder: "Add custom rule...",
-      logBtnLocked: "🔒 Complete checklist to log trade",
-      logBtnUnlocked: "✅ Log Trade to Journal",
-      logBtnNoAccount: "🔒 Create an account first",
+      logBtnLocked: "Complete checklist to log trade",
+      logBtnUnlocked: "Log trade to journal",
+      logBtnNoAccount: "Create an account first",
 
       journalTitle: "Trade Journal",
       winRateLabel: "Win Rate:",

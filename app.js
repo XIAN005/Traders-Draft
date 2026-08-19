@@ -57,7 +57,9 @@
           <input type="checkbox" data-rule-id="${rule.id}" class="checklist-checkbox mt-0.5 rounded border-border bg-panel2 accent-good w-4 h-4 flex-shrink-0" />
           <span class="text-xs text-slate-300 group-has-[:checked]:text-slate-500 group-has-[:checked]:line-through">${escapeHtml(rule.labelKey ? I18n.get(rule.labelKey) : rule.label)}</span>
         </label>
-        <button data-delete-rule="${rule.id}" class="text-slate-600 hover:text-bad text-xs px-1.5 opacity-0 group-hover:opacity-100 transition">✕</button>
+        <button data-delete-rule="${rule.id}" aria-label="Delete rule" class="text-slate-600 hover:text-bad p-1 rounded-md transition shrink-0">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg>
+        </button>
       </div>
     `).join('');
 
