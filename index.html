@@ -382,9 +382,9 @@
   </div>
 
   <!-- NEW ACCOUNT MODAL -->
-  <div id="newAccountModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
+  <div id="newAccountModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 overflow-y-auto">
     <div id="newAccountBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4">
+    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
       <h3 data-i18n="newAccountTitle" class="text-sm font-semibold text-slate-100">Nouveau Compte</h3>
 
       <div>
@@ -427,9 +427,9 @@
   </div>
 
   <!-- CLOSE TRADE MODAL -->
-  <div id="closeTradeModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
+  <div id="closeTradeModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 overflow-y-auto">
     <div id="closeTradeBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4">
+    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
       <h3 data-i18n="resultCloseTitle" class="text-sm font-semibold text-slate-100">Clôturer le trade</h3>
       <div>
         <label data-i18n="resultRMultipleLabel" class="text-[11px] font-medium text-slate-500 leading-relaxed">Résultat en R (ex. 2 = +2R, -1 = stop touché)</label>
@@ -440,10 +440,12 @@
         <button id="closeTradeConfirmBtn" type="button" data-i18n="resultConfirmBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-accent text-slate-900 hover:bg-accent2 transition">Confirmer</button>
       </div>
     </div>
+  </div>
+
   <!-- TRADE NOTE MODAL -->
-  <div id="tradeNoteModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
+  <div id="tradeNoteModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 overflow-y-auto">
     <div id="tradeNoteBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4">
+    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
       <h3 data-i18n="tradeNoteTitle" class="text-sm font-semibold text-slate-100">Note du trade</h3>
       <textarea id="tradeNoteTextarea" rows="4" data-i18n-placeholder="tradeNotesPlaceholder" class="w-full bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition resize-none"></textarea>
       <div class="flex gap-2 pt-1">
@@ -454,9 +456,9 @@
   </div>
 
   <!-- DELETE ACCOUNT MODAL -->
-  <div id="deleteAccountModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
+  <div id="deleteAccountModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 overflow-y-auto">
     <div id="deleteAccountBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4">
+    <div class="relative card border border-border rounded-2xl shadow-card w-full max-w-sm p-5 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
       <h3 data-i18n="delAccountTitle" class="text-sm font-semibold text-slate-100">Supprimer le compte</h3>
       <p id="deleteAccountText" class="text-xs text-slate-400 leading-relaxed"></p>
       <div class="flex gap-2 pt-1">
