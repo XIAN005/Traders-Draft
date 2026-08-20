@@ -34,12 +34,15 @@
   state.beginnerMode = await DB.Settings.get('beginnerMode', true);
   document.getElementById('beginnerModeToggle').checked = state.beginnerMode;
   applyBeginnerMode();
+  I18n.setLanguage('fr');
+  document.getElementById('langSelector').value = 'fr';
   await loadAccounts();
   await loadChecklist();
   bindEvents();
+  applyStaticTranslations();
   setAssetClass('forex');
   setDirection('long');
-  updateInterfaceLanguage('fr');
+  await renderJournal();
 
   async function loadAccounts() {
     state.accounts = await DB.Accounts.all();
@@ -109,7 +112,9 @@
 
     container.querySelectorAll('[data-delete-rule]').forEach(btn => {
       btn.addEventListener('click', async (e) => {
-        await DB.ChecklistRules.delete(e.currentTarget.dataset.deleteRule);
+        const ruleId = e.currentTarget.dataset.deleteRule;
+        await DB.ChecklistRules.delete(ruleId);
+        state.checkedItems.delete(ruleId);
         await loadChecklist();
         recalculate();
       });
@@ -276,6 +281,7 @@
     if (['forex', 'crypto', 'indices'].includes(state.assetClass)) {
       const sym = state.selectedSymbol[state.assetClass];
       if (sym && sym !== 'OTHER') return sym;
+      return I18n.get('pairOther');
     }
     return state.assetClass.toUpperCase();
   }
@@ -290,6 +296,16 @@
     });
     autoFillSlTp();
     recalculate();
+  }
+
+  function syncRrPresetHighlight() {
+    const rrValue = document.getElementById('rrTargetInput').value.trim();
+    document.querySelectorAll('.rr-preset-btn').forEach(b => {
+      const matches = rrValue !== '' && b.dataset.rr === rrValue;
+      b.classList.toggle('bg-accent/10', matches);
+      b.classList.toggle('text-accent', matches);
+      b.classList.toggle('border-accent/40', matches);
+    });
   }
 
   function autoFillSlTp() {
@@ -740,8 +756,7 @@
     }
   }
 
-  function updateInterfaceLanguage(lang) {
-    I18n.setLanguage(lang);
+  function applyStaticTranslations() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
       if (el.id === 'pairSelectLabel') return; // géré par setAssetClass selon la classe d'actif active
       el.textContent = I18n.get(el.dataset.i18n);
@@ -753,6 +768,11 @@
     if (inputRule) inputRule.placeholder = I18n.get('addRulePlaceholder');
     const pairLabel = document.getElementById('pairSelectLabel');
     if (pairLabel) pairLabel.textContent = I18n.get(pairLabel.dataset.i18n);
+  }
+
+  function updateInterfaceLanguage(lang) {
+    I18n.setLanguage(lang);
+    applyStaticTranslations();
     if (['forex', 'crypto', 'indices'].includes(state.assetClass)) populatePairSelect();
     loadAccounts();
     renderChecklist();
@@ -773,6 +793,7 @@
       recalculate();
     });
     document.getElementById('rrTargetInput').addEventListener('input', () => {
+      syncRrPresetHighlight();
       autoFillSlTp();
       recalculate();
     });
@@ -788,8 +809,7 @@
     document.querySelectorAll('.rr-preset-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.getElementById('rrTargetInput').value = btn.dataset.rr;
-        document.querySelectorAll('.rr-preset-btn').forEach(b => b.classList.remove('bg-accent/10', 'text-accent', 'border-accent/40'));
-        btn.classList.add('bg-accent/10', 'text-accent', 'border-accent/40');
+        syncRrPresetHighlight();
         autoFillSlTp();
         recalculate();
       });

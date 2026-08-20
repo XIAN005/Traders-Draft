@@ -176,6 +176,7 @@ const I18n = (() => {
 
       unitLots: "lots",
       unitUnits: "unités",
+      unitCoins: "pièces",
       unitContracts: "contrats",
 
       statusOpen: "OUVERT",
@@ -382,6 +383,7 @@ const I18n = (() => {
 
       unitLots: "lots",
       unitUnits: "units",
+      unitCoins: "coins",
       unitContracts: "contracts",
 
       statusOpen: "OPEN",
