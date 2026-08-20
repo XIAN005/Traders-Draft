@@ -50,7 +50,7 @@ const Calculator = (() => {
   function calculate(input) {
     const {
       assetClass, capital, riskPercent, entry, sl, tp, direction = 'long',
-      isJPYPair = false, pipValueOverride, pointValueOverride
+      isJPYPair = false, pipValueOverride, pointValueOverride, leverage
     } = input;
 
     const errors = [];
@@ -102,7 +102,7 @@ const Calculator = (() => {
           : ASSET_CLASSES.indices.defaultPointValue;
         positionSize = riskAmount / (slDistance * pointValue);
         sizeUnit = 'unitContracts';
-        extra = { pointValue };
+        extra = { pointValue, notional: round(positionSize * entry * pointValue, 2) };
         break;
       }
       case 'gold': {
@@ -111,11 +111,44 @@ const Calculator = (() => {
           : ASSET_CLASSES.gold.defaultPointValue;
         positionSize = riskAmount / (slDistance * pointValue);
         sizeUnit = 'unitLots';
-        extra = { pointValue };
+        extra = { pointValue, notional: round(positionSize * entry * pointValue, 2) };
         break;
       }
       default:
         return { valid: false, errors: ['errUnknownAsset'] };
+    }
+
+    // Forex notional = position size in lots x 100,000 units x entry price
+    if (assetClass === 'forex') {
+      extra.notional = round(positionSize * 100000 * entry, 2);
+    }
+
+    // Leverage: required margin, % of capital used as margin, and a simple
+    // liquidation-distance estimate (rough — ignores swaps/fees/broker-specific
+    // stop-out rules, which vary; treat as an educational approximation).
+    let leverageInfo = {};
+    if (leverage && leverage > 0 && extra.notional) {
+      const marginRequired = extra.notional / leverage;
+      const marginPercentOfCapital = (marginRequired / capital) * 100;
+      // Distance (in % of entry price) the market can move against the position
+      // before the free capital (capital - marginRequired) is wiped out.
+      const freeCapital = capital - marginRequired;
+      const liquidationDistancePercent = freeCapital > 0
+        ? (freeCapital / extra.notional) * 100
+        : 0;
+
+      let riskLevel = 'low';
+      if (marginPercentOfCapital >= 50 || freeCapital <= 0) riskLevel = 'extreme';
+      else if (marginPercentOfCapital >= 25) riskLevel = 'high';
+      else if (marginPercentOfCapital >= 10) riskLevel = 'moderate';
+
+      leverageInfo = {
+        leverage,
+        marginRequired: round(marginRequired, 2),
+        marginPercentOfCapital: round(marginPercentOfCapital, 2),
+        liquidationDistancePercent: round(liquidationDistancePercent, 2),
+        riskLevel
+      };
     }
 
     return {
@@ -129,7 +162,8 @@ const Calculator = (() => {
       positionSize: round(positionSize, assetClass === 'crypto' ? 6 : 2),
       sizeUnit,
       assetClass,
-      ...extra
+      ...extra,
+      ...leverageInfo
     };
   }
 

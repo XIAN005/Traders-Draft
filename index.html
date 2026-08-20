@@ -145,6 +145,23 @@
             </select>
           </div>
 
+          <div class="flex flex-wrap items-end gap-3 sm:gap-4 mb-3.5">
+            <div class="flex-1 min-w-[100px]">
+              <label data-i18n="slPercentLabel" class="text-[11px] font-medium text-slate-500">Distance SL (%)</label>
+              <input id="slPercentInput" type="number" inputmode="decimal" step="any" min="0" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" placeholder="0.5" />
+            </div>
+            <div class="flex-1 min-w-[100px]">
+              <label data-i18n="rrTargetLabel" class="text-[11px] font-medium text-slate-500">Ratio R:R visé</label>
+              <input id="rrTargetInput" type="number" inputmode="decimal" step="0.1" min="0" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" placeholder="2" />
+            </div>
+            <div class="flex gap-1.5 flex-wrap">
+              <button type="button" class="rr-preset-btn px-2.5 py-2 text-xs font-medium rounded-lg border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="1">1:1</button>
+              <button type="button" class="rr-preset-btn px-2.5 py-2 text-xs font-medium rounded-lg border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="1.5">1:1.5</button>
+              <button type="button" class="rr-preset-btn px-2.5 py-2 text-xs font-medium rounded-lg border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="2">1:2</button>
+              <button type="button" class="rr-preset-btn px-2.5 py-2 text-xs font-medium rounded-lg border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="3">1:3</button>
+            </div>
+          </div>
+
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             <div>
               <label data-i18n="capitalLabel" class="text-[11px] font-medium text-slate-500">Capital ($)</label>
@@ -159,16 +176,37 @@
               <input id="entryInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" placeholder="0.00" />
             </div>
             <div>
-              <label data-i18n="slLabel" class="text-[11px] font-medium text-slate-500">Stop Loss</label>
+              <label data-i18n="slLabel" class="text-[11px] font-medium text-slate-500">Stop Loss
+                <span id="slAutoTag" data-i18n="autoTag" class="hidden ml-1 text-[9px] font-semibold text-accent align-middle">AUTO</span>
+              </label>
               <input id="slInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-bad/30 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-bad/40 focus:border-bad/40 transition" placeholder="0.00" />
             </div>
             <div>
-              <label data-i18n="tpLabel" class="text-[11px] font-medium text-slate-500">Take Profit</label>
+              <label data-i18n="tpLabel" class="text-[11px] font-medium text-slate-500">Take Profit
+                <span id="tpAutoTag" data-i18n="autoTag" class="hidden ml-1 text-[9px] font-semibold text-accent align-middle">AUTO</span>
+              </label>
               <input id="tpInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-good/30 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-good/40 focus:border-good/40 transition" placeholder="0.00" />
             </div>
             <div id="assetExtraField" class="hidden">
-              <label data-i18n="pipValueLabel" class="text-[11px] font-medium text-slate-500">Valeur Point/Pip ($)</label>
+              <label data-i18n="pipValueLabel" class="text-[11px] font-medium text-slate-500">Valeur Point/Pip ($)
+                <span id="pipLiveTag" data-i18n="pipLiveTag" class="hidden ml-1 text-[9px] font-semibold text-good align-middle">LIVE</span>
+              </label>
               <input id="assetExtraInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" />
+            </div>
+            <div>
+              <label data-i18n="leverageLabel" class="text-[11px] font-medium text-slate-500">Levier (optionnel)</label>
+              <select id="leverageInput" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition">
+                <option value="">—</option>
+                <option value="5">1:5</option>
+                <option value="10">1:10</option>
+                <option value="20">1:20</option>
+                <option value="30">1:30</option>
+                <option value="50">1:50</option>
+                <option value="100">1:100</option>
+                <option value="200">1:200</option>
+                <option value="500">1:500</option>
+                <option value="1000">1:1000</option>
+              </select>
             </div>
           </div>
 
@@ -178,6 +216,28 @@
           </div>
 
           <div id="calcErrors" class="hidden mt-4 text-xs text-bad bg-bad/10 border border-bad/30 rounded-xl p-3"></div>
+
+          <div id="leverageInfoBox" class="hidden mt-4 border rounded-xl p-3.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span data-i18n="leverageInfoTitle" class="text-xs font-semibold text-slate-300">Impact du Levier</span>
+              <span id="leverageRiskBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase"></span>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5 text-xs">
+              <div>
+                <p data-i18n="marginRequiredLabel" class="text-slate-500">Marge requise</p>
+                <p id="resMarginRequired" class="mono font-semibold text-slate-200">—</p>
+              </div>
+              <div>
+                <p data-i18n="marginPercentLabel" class="text-slate-500">% du capital en marge</p>
+                <p id="resMarginPercent" class="mono font-semibold text-slate-200">—</p>
+              </div>
+              <div class="col-span-2">
+                <p data-i18n="liquidationDistanceLabel" class="text-slate-500">Distance jusqu'à liquidation estimée</p>
+                <p id="resLiquidationDistance" class="mono font-semibold text-slate-200">—</p>
+              </div>
+            </div>
+            <p data-i18n="leverageInfoNote" class="text-[10px] text-slate-500 leading-relaxed pt-1 border-t border-border/60"></p>
+          </div>
         </div>
 
         <!-- Results -->
@@ -206,10 +266,13 @@
 
         <!-- Instructor -->
         <div class="card border border-border rounded-2xl p-4 sm:p-5 shadow-card">
-          <h3 data-i18n="instTitle" class="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
-            Instructeur Virtuel
-          </h3>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+              <span id="instTitleText" data-i18n="instTitle">Instructeur Virtuel</span>
+            </h3>
+            <div id="instructorScoreBox" class="hidden items-center gap-2"></div>
+          </div>
           <div id="instructorMessages" class="space-y-2"></div>
         </div>
 
@@ -367,6 +430,10 @@
             <h3 data-i18n="eduPropTitle" class="text-sm font-semibold text-slate-200">Drawdown Max &amp; Daily Loss Limit</h3>
             <p data-i18n="eduPropDesc" class="text-xs text-slate-400 whitespace-pre-line leading-relaxed"></p>
           </div>
+          <div class="bg-panel2/60 border border-border rounded-xl p-4 space-y-2 hover:border-accent/20 transition">
+            <h3 data-i18n="eduLeverageTitle" class="text-sm font-semibold text-slate-200">Le Levier (Leverage)</h3>
+            <p data-i18n="eduLeverageDesc" class="text-xs text-slate-400 whitespace-pre-line leading-relaxed"></p>
+          </div>
         </div>
 
         <div class="mt-3 sm:mt-4 bg-panel2/60 border border-border rounded-xl p-4 space-y-2">
@@ -488,6 +555,7 @@
 <script src="db.js"></script>
 <script src="seed.js"></script>
 <script src="calculator.js"></script>
+<script src="fxRates.js"></script>
 <script src="instructor.js"></script>
 <script src="app.js"></script>
 <script>

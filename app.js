@@ -5,6 +5,7 @@
   let state = {
     assetClass: 'forex',
     selectedSymbol: {},
+    pipFetchToken: 0,
     direction: 'long',
     activeAccount: null,
     accounts: [],
@@ -166,6 +167,7 @@
     jpyWrap.classList.remove('flex');
     extraField.classList.remove('hidden');
     pairField.classList.add('hidden');
+    document.getElementById('pipLiveTag').classList.add('hidden');
 
     if (assetClass === 'forex') {
       pairField.classList.remove('hidden');
@@ -215,6 +217,7 @@
     const pairSelect = document.getElementById('pairSelect');
     const extraInput = document.getElementById('assetExtraInput');
     const jpyToggle = document.getElementById('jpyToggle');
+    const pipLiveTag = document.getElementById('pipLiveTag');
     const symbol = pairSelect.value;
     state.selectedSymbol[state.assetClass] = symbol;
 
@@ -222,13 +225,28 @@
       if (symbol === 'OTHER') {
         extraInput.value = 10;
         jpyToggle.checked = false;
+        pipLiveTag.classList.add('hidden');
         return;
       }
       const pair = Calculator.FOREX_PAIRS.find(p => p.symbol === symbol);
-      if (pair) {
-        extraInput.value = pair.pipValue;
-        jpyToggle.checked = pair.isJPY;
-      }
+      if (!pair) return;
+
+      // Instant fill with static fallback so the field is never empty,
+      // then silently refine with a live rate if available.
+      extraInput.value = pair.pipValue;
+      jpyToggle.checked = pair.isJPY;
+      pipLiveTag.classList.add('hidden');
+
+      const requestId = ++state.pipFetchToken;
+      FxRates.getForexPipValueUSD(symbol, pair.isJPY).then(liveValue => {
+        // Ignore stale responses (user switched pair/asset class meanwhile)
+        if (requestId !== state.pipFetchToken) return;
+        if (liveValue !== null && state.selectedSymbol.forex === symbol) {
+          extraInput.value = liveValue;
+          pipLiveTag.classList.remove('hidden');
+          recalculate();
+        }
+      });
     } else if (state.assetClass === 'indices') {
       if (symbol === 'OTHER') {
         extraInput.value = 1;
@@ -256,7 +274,51 @@
         active ? (direction === 'long' ? 'bg-good/20 text-good' : 'bg-bad/20 text-bad') : 'text-slate-500 hover:text-slate-300'
       }`;
     });
+    autoFillSlTp();
     recalculate();
+  }
+
+  function autoFillSlTp() {
+    const entry = parseFloat(document.getElementById('entryInput').value);
+    const slPercent = parseFloat(document.getElementById('slPercentInput').value);
+    const rr = parseFloat(document.getElementById('rrTargetInput').value);
+    const slAutoTag = document.getElementById('slAutoTag');
+    const tpAutoTag = document.getElementById('tpAutoTag');
+
+    if (!entry || entry <= 0 || !slPercent || slPercent <= 0) {
+      slAutoTag.classList.add('hidden');
+      tpAutoTag.classList.add('hidden');
+      return;
+    }
+
+    const slDistance = entry * (slPercent / 100);
+    let sl;
+    if (state.direction === 'long') {
+      sl = entry - slDistance;
+    } else {
+      sl = entry + slDistance;
+    }
+
+    document.getElementById('slInput').value = round(sl, 6);
+    slAutoTag.classList.remove('hidden');
+
+    if (rr && rr > 0) {
+      let tp;
+      if (state.direction === 'long') {
+        tp = entry + slDistance * rr;
+      } else {
+        tp = entry - slDistance * rr;
+      }
+      document.getElementById('tpInput').value = round(tp, 6);
+      tpAutoTag.classList.remove('hidden');
+    } else {
+      tpAutoTag.classList.add('hidden');
+    }
+  }
+
+  function round(num, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.round((num + Number.EPSILON) * factor) / factor;
   }
 
   async function recalculate() {
@@ -276,9 +338,12 @@
     const extraRaw = document.getElementById('assetExtraInput').value;
     const extraVal = extraRaw !== '' ? parseFloat(extraRaw) : undefined;
 
+    const leverageRaw = document.getElementById('leverageInput').value;
+    const leverage = leverageRaw !== '' ? parseFloat(leverageRaw) : undefined;
+
     const input = {
       assetClass: state.assetClass, capital, riskPercent, entry, sl, tp,
-      direction: state.direction, isJPYPair,
+      direction: state.direction, isJPYPair, leverage,
       pipValueOverride: state.assetClass === 'forex' ? extraVal : undefined,
       pointValueOverride: ['indices', 'gold'].includes(state.assetClass) ? extraVal : undefined
     };
@@ -303,11 +368,13 @@
 
   function renderResults(result) {
     const errBox = document.getElementById('calcErrors');
+    const leverageBox = document.getElementById('leverageInfoBox');
     if (!result.valid) {
       document.getElementById('resPositionSize').textContent = '—';
       document.getElementById('resRiskAmount').textContent = '—';
       document.getElementById('resPotentialProfit').textContent = '—';
       document.getElementById('resRR').textContent = '—';
+      leverageBox.classList.add('hidden');
 
       const hasUserInput = ['entryInput', 'slInput', 'tpInput'].some(id => document.getElementById(id).value !== '');
       if (hasUserInput && result.errors && result.errors.length) {
@@ -327,16 +394,64 @@
     document.getElementById('resRiskAmount').textContent = `$${result.riskAmount.toFixed(2)}`;
     document.getElementById('resPotentialProfit').textContent = `$${result.potentialProfit.toFixed(2)}`;
     document.getElementById('resRR').textContent = `1 : ${result.rrRatio}`;
+
+    if (result.leverage && result.marginRequired !== undefined) {
+      leverageBox.classList.remove('hidden');
+      document.getElementById('resMarginRequired').textContent = `$${result.marginRequired.toFixed(2)}`;
+      document.getElementById('resMarginPercent').textContent = `${result.marginPercentOfCapital.toFixed(2)}%`;
+      document.getElementById('resLiquidationDistance').textContent = `${result.liquidationDistancePercent.toFixed(2)}%`;
+
+      const riskStyles = {
+        low: { box: 'border-good/30 bg-good/5', badge: 'bg-good/20 text-good', key: 'leverageRiskLow' },
+        moderate: { box: 'border-warn/30 bg-warn/5', badge: 'bg-warn/20 text-warn', key: 'leverageRiskModerate' },
+        high: { box: 'border-bad/30 bg-bad/5', badge: 'bg-bad/20 text-bad', key: 'leverageRiskHigh' },
+        extreme: { box: 'border-bad/50 bg-bad/10', badge: 'bg-bad/30 text-bad', key: 'leverageRiskExtreme' }
+      };
+      const style = riskStyles[result.riskLevel] || riskStyles.low;
+      leverageBox.className = `mt-4 border rounded-xl p-3.5 space-y-2 ${style.box}`;
+      const badge = document.getElementById('leverageRiskBadge');
+      badge.className = `text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${style.badge}`;
+      badge.textContent = I18n.get(style.key);
+    } else {
+      leverageBox.classList.add('hidden');
+    }
   }
 
   function renderInstructor(result, context) {
     const box = document.getElementById('instructorMessages');
+    const scoreBox = document.getElementById('instructorScoreBox');
     if (!result.valid) {
       box.innerHTML = `<p class="text-xs text-slate-500">${I18n.get('instEmpty')}</p>`;
+      if (scoreBox) {
+        scoreBox.classList.add('hidden');
+        scoreBox.classList.remove('flex');
+      }
       return;
     }
 
-    const messages = Instructor.analyze(result, context);
+    const analysis = Instructor.analyze(result, context);
+    const { messages, score, grade } = analysis;
+
+    if (scoreBox) {
+      if (score !== null) {
+        scoreBox.classList.remove('hidden');
+        scoreBox.classList.add('flex');
+        const gradeStyles = {
+          A: 'bg-good/20 text-good border-good/30',
+          B: 'bg-accent/20 text-accent border-accent/30',
+          C: 'bg-warn/20 text-warn border-warn/30',
+          D: 'bg-bad/20 text-bad border-bad/30'
+        };
+        scoreBox.innerHTML = `
+          <span class="text-[11px] text-slate-500">${I18n.get('instScoreLabel')}</span>
+          <span class="mono text-xs font-bold px-2 py-0.5 rounded-full border ${gradeStyles[grade]}">${grade} · ${score}/100</span>
+        `;
+      } else {
+        scoreBox.classList.add('hidden');
+        scoreBox.classList.remove('flex');
+      }
+    }
+
     if (messages.length === 0) {
       box.innerHTML = `<p class="text-xs text-good">${I18n.get('instOk')}</p>`;
       return;
@@ -344,7 +459,7 @@
 
     const styles = { good: 'bg-good/10 border-good/30 text-good', warn: 'bg-warn/10 border-warn/30 text-warn', bad: 'bg-bad/10 border-bad/30 text-bad' };
     box.innerHTML = messages.map(m => `
-      <div class="flex items-start gap-2 text-xs border rounded-lg p-2.5 ${styles[m.level]}">
+      <div class="flex items-start gap-2 text-xs border rounded-lg p-2.5 leading-relaxed ${styles[m.level]}">
         <span>${escapeHtml(m.message)}</span>
       </div>
     `).join('');
@@ -617,8 +732,43 @@
   function bindEvents() {
     document.querySelectorAll('.asset-tab').forEach(btn => btn.addEventListener('click', () => setAssetClass(btn.dataset.asset)));
     document.querySelectorAll('.dir-btn').forEach(btn => btn.addEventListener('click', () => setDirection(btn.dataset.dir)));
-    ['capitalInput', 'riskInput', 'entryInput', 'slInput', 'tpInput', 'assetExtraInput'].forEach(id => document.getElementById(id).addEventListener('input', recalculate));
+    ['capitalInput', 'riskInput'].forEach(id => document.getElementById(id).addEventListener('input', recalculate));
+    document.getElementById('entryInput').addEventListener('input', () => {
+      autoFillSlTp();
+      recalculate();
+    });
+    document.getElementById('slPercentInput').addEventListener('input', () => {
+      autoFillSlTp();
+      recalculate();
+    });
+    document.getElementById('rrTargetInput').addEventListener('input', () => {
+      autoFillSlTp();
+      recalculate();
+    });
+    document.getElementById('slInput').addEventListener('input', () => {
+      document.getElementById('slAutoTag').classList.add('hidden');
+      document.getElementById('tpAutoTag').classList.add('hidden');
+      recalculate();
+    });
+    document.getElementById('tpInput').addEventListener('input', () => {
+      document.getElementById('tpAutoTag').classList.add('hidden');
+      recalculate();
+    });
+    document.querySelectorAll('.rr-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('rrTargetInput').value = btn.dataset.rr;
+        document.querySelectorAll('.rr-preset-btn').forEach(b => b.classList.remove('bg-accent/10', 'text-accent', 'border-accent/40'));
+        btn.classList.add('bg-accent/10', 'text-accent', 'border-accent/40');
+        autoFillSlTp();
+        recalculate();
+      });
+    });
+    document.getElementById('assetExtraInput').addEventListener('input', () => {
+      document.getElementById('pipLiveTag').classList.add('hidden');
+      recalculate();
+    });
     document.getElementById('jpyToggle').addEventListener('change', recalculate);
+    document.getElementById('leverageInput').addEventListener('change', recalculate);
     document.getElementById('pairSelect').addEventListener('change', () => {
       if (state.assetClass === 'crypto') {
         state.selectedSymbol.crypto = document.getElementById('pairSelect').value;
