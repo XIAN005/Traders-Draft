@@ -176,19 +176,22 @@
               <input id="entryInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" placeholder="0.00" />
             </div>
             <div>
-              <label data-i18n="slLabel" class="text-[11px] font-medium text-slate-500">Stop Loss
+              <label class="text-[11px] font-medium text-slate-500">
+                <span id="slLabelText" data-i18n="slLabel">Stop Loss</span>
                 <span id="slAutoTag" data-i18n="autoTag" class="hidden ml-1 text-[9px] font-semibold text-accent align-middle">AUTO</span>
               </label>
               <input id="slInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-bad/30 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-bad/40 focus:border-bad/40 transition" placeholder="0.00" />
             </div>
             <div>
-              <label data-i18n="tpLabel" class="text-[11px] font-medium text-slate-500">Take Profit
+              <label class="text-[11px] font-medium text-slate-500">
+                <span id="tpLabelText" data-i18n="tpLabel">Take Profit</span>
                 <span id="tpAutoTag" data-i18n="autoTag" class="hidden ml-1 text-[9px] font-semibold text-accent align-middle">AUTO</span>
               </label>
               <input id="tpInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-good/30 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-good/40 focus:border-good/40 transition" placeholder="0.00" />
             </div>
             <div id="assetExtraField" class="hidden">
-              <label data-i18n="pipValueLabel" class="text-[11px] font-medium text-slate-500">Valeur Point/Pip ($)
+              <label class="text-[11px] font-medium text-slate-500">
+                <span id="pipValueLabelText" data-i18n="pipValueLabel">Valeur Point/Pip ($)</span>
                 <span id="pipLiveTag" data-i18n="pipLiveTag" class="hidden ml-1 text-[9px] font-semibold text-good align-middle">LIVE</span>
               </label>
               <input id="assetExtraInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-1.5 bg-panel2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" />
