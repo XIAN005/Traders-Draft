@@ -65,7 +65,7 @@
   function renderChecklist() {
     const container = document.getElementById('checklistItems');
     container.innerHTML = state.checklistRules.map((rule, idx) => `
-      <div class="flex items-center justify-between p-2 rounded-lg border border-border bg-panel2/50 hover:bg-panel2 transition group">
+      <div class="flex items-center justify-between p-2.5 rounded-xl border border-border bg-panel2/50 hover:bg-panel2 transition group">
         <div class="flex flex-col shrink-0 mr-1">
           <button data-move-up="${rule.id}" ${idx === 0 ? 'disabled' : ''} aria-label="Move up" class="text-slate-600 hover:text-accent disabled:opacity-20 disabled:hover:text-slate-600 p-0.5 transition">
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 6.5L5 3l3.5 3.5"/></svg>
@@ -78,7 +78,7 @@
           <input type="checkbox" data-rule-id="${rule.id}" class="checklist-checkbox mt-0.5 rounded border-border bg-panel2 accent-good w-4 h-4 flex-shrink-0" />
           <span class="text-xs text-slate-300 group-has-[:checked]:text-slate-500 group-has-[:checked]:line-through">${escapeHtml(rule.labelKey ? I18n.get(rule.labelKey) : rule.label)}</span>
         </label>
-        <button data-delete-rule="${rule.id}" aria-label="Delete rule" class="text-slate-600 hover:text-bad p-1 rounded-md transition shrink-0">
+        <button data-delete-rule="${rule.id}" aria-label="Delete rule" class="text-slate-600 hover:text-bad p-1 rounded-lg transition shrink-0">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg>
         </button>
       </div>
@@ -133,18 +133,18 @@
     if (!state.activeAccount) {
       btn.disabled = true;
       btn.textContent = I18n.get('logBtnNoAccount');
-      btn.className = 'w-full mt-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-700/50 text-slate-500 cursor-not-allowed transition';
+      btn.className = 'w-full mt-5 py-3 rounded-2xl text-sm font-semibold bg-slate-700/50 text-slate-500 cursor-not-allowed transition';
       return;
     }
 
     if (allChecked && hasValidCalc) {
       btn.disabled = false;
       btn.textContent = I18n.get('logBtnUnlocked');
-      btn.className = 'w-full mt-5 py-2.5 rounded-xl text-sm font-semibold bg-good text-slate-900 hover:bg-good/90 transition cursor-pointer';
+      btn.className = 'w-full mt-5 py-3 rounded-2xl text-sm font-semibold bg-good text-slate-900 hover:bg-good/90 transition cursor-pointer';
     } else {
       btn.disabled = true;
       btn.textContent = I18n.get('logBtnLocked');
-      btn.className = 'w-full mt-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-700/50 text-slate-500 cursor-not-allowed transition';
+      btn.className = 'w-full mt-5 py-3 rounded-2xl text-sm font-semibold bg-slate-700/50 text-slate-500 cursor-not-allowed transition';
     }
   }
 
@@ -152,7 +152,7 @@
     state.assetClass = assetClass;
     document.querySelectorAll('.asset-tab').forEach(btn => {
       const active = btn.dataset.asset === assetClass;
-      btn.className = `asset-tab px-3 py-1.5 text-xs font-medium rounded-lg transition ${
+      btn.className = `asset-tab px-3.5 py-2 text-xs font-medium rounded-xl transition ${
         active ? 'bg-accent/10 text-accent border border-accent/30' : 'text-slate-400 hover:text-slate-200 border border-transparent'
       }`;
     });
@@ -270,7 +270,7 @@
     state.direction = direction;
     document.querySelectorAll('.dir-btn').forEach(btn => {
       const active = btn.dataset.dir === direction;
-      btn.className = `dir-btn px-3 py-1 text-xs font-medium rounded-md transition ${
+      btn.className = `dir-btn px-3.5 py-1.5 text-xs font-medium rounded-lg transition ${
         active ? (direction === 'long' ? 'bg-good/20 text-good' : 'bg-bad/20 text-bad') : 'text-slate-500 hover:text-slate-300'
       }`;
     });
@@ -323,7 +323,7 @@
 
   async function recalculate() {
     if (!state.activeAccount) {
-      document.getElementById('instructorMessages').innerHTML = `<div class="p-3 bg-warn/10 border border-warn/30 text-warn rounded-lg text-xs">${I18n.get('instNoAccount')}</div>`;
+      document.getElementById('instructorMessages').innerHTML = `<div class="p-3.5 bg-warn/10 border border-warn/30 text-warn rounded-xl text-xs">${I18n.get('instNoAccount')}</div>`;
       document.getElementById('resPositionSize').textContent = '—';
       return;
     }
@@ -408,7 +408,7 @@
         extreme: { box: 'border-bad/50 bg-bad/10', badge: 'bg-bad/30 text-bad', key: 'leverageRiskExtreme' }
       };
       const style = riskStyles[result.riskLevel] || riskStyles.low;
-      leverageBox.className = `mt-4 border rounded-xl p-3.5 space-y-2 ${style.box}`;
+      leverageBox.className = `mt-4 border rounded-2xl p-4 space-y-2.5 ${style.box}`;
       const badge = document.getElementById('leverageRiskBadge');
       badge.className = `text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${style.badge}`;
       badge.textContent = I18n.get(style.key);
@@ -459,7 +459,7 @@
 
     const styles = { good: 'bg-good/10 border-good/30 text-good', warn: 'bg-warn/10 border-warn/30 text-warn', bad: 'bg-bad/10 border-bad/30 text-bad' };
     box.innerHTML = messages.map(m => `
-      <div class="flex items-start gap-2 text-xs border rounded-lg p-2.5 leading-relaxed ${styles[m.level]}">
+      <div class="flex items-start gap-2.5 text-xs border rounded-xl p-3 leading-relaxed ${styles[m.level]}">
         <span>${escapeHtml(m.message)}</span>
       </div>
     `).join('');
@@ -604,7 +604,7 @@
     state.newAccountType = type;
     document.querySelectorAll('.acc-type-btn').forEach(btn => {
       const active = btn.dataset.accType === type;
-      btn.className = `acc-type-btn flex-1 py-1.5 text-xs font-semibold rounded-md transition ${
+      btn.className = `acc-type-btn flex-1 py-2 text-xs font-semibold rounded-lg transition ${
         active ? 'bg-accent/10 text-accent border border-accent/30' : 'text-slate-400 hover:text-slate-200'
       }`;
     });
@@ -882,8 +882,8 @@
         const active = btn === activeBtn;
         sec.classList.toggle('hidden', !active);
         btn.className = active
-          ? "main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg bg-accent/10 text-accent border border-accent/30 transition"
-          : "main-tab flex-1 py-2.5 sm:py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition";
+          ? "main-tab flex-1 py-2.5 sm:py-2.5 text-xs font-semibold rounded-xl bg-accent/10 text-accent border border-accent/30 transition"
+          : "main-tab flex-1 py-2.5 sm:py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-slate-200 transition";
       });
       if (activeSec === analyticsSec) renderAnalytics();
     }
@@ -1001,14 +1001,16 @@
     const pathD = points.map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(i).toFixed(1)} ${toY(v).toFixed(1)}`).join(' ');
     const zeroY = toY(0).toFixed(1);
     const last = points[points.length - 1];
-    const lineColor = last >= 0 ? '#4fae7e' : '#c4685a';
+    // Same sage/coral tokens as the rest of the UI (good/bad) — keeps the
+    // chart from reading as a separate, harsher "trading terminal" widget.
+    const lineColor = last >= 0 ? '#7fb8a6' : '#d99a8c';
 
     const areaD = `${pathD} L ${toX(points.length - 1).toFixed(1)} ${zeroY} L ${toX(0).toFixed(1)} ${zeroY} Z`;
 
     svg.innerHTML = `
-      <line x1="${padX}" y1="${zeroY}" x2="${w - padX}" y2="${zeroY}" stroke="#26282d" stroke-width="1" stroke-dasharray="3,3" />
-      <path d="${areaD}" fill="${lineColor}" fill-opacity="0.08" stroke="none" />
-      <path d="${pathD}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+      <line x1="${padX}" y1="${zeroY}" x2="${w - padX}" y2="${zeroY}" stroke="#2e3540" stroke-width="1" stroke-dasharray="3,3" />
+      <path d="${areaD}" fill="${lineColor}" fill-opacity="0.1" stroke="none" />
+      <path d="${pathD}" fill="none" stroke="${lineColor}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
     `;
   }
 
