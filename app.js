@@ -15,11 +15,25 @@
     newAccountType: 'personal',
     pendingCloseTradeId: null,
     pendingDeleteAccountId: null,
-    pendingNoteTradeId: null
+    pendingNoteTradeId: null,
+    beginnerMode: true
   };
+
+  function isBeginnerMode() {
+    return state.beginnerMode;
+  }
+
+  function applyBeginnerMode() {
+    document.querySelectorAll('.beginner-help').forEach(el => {
+      el.classList.toggle('hidden', !state.beginnerMode);
+    });
+  }
 
   await DB.open();
   await Seed.runIfNeeded();
+  state.beginnerMode = await DB.Settings.get('beginnerMode', true);
+  document.getElementById('beginnerModeToggle').checked = state.beginnerMode;
+  applyBeginnerMode();
   await loadAccounts();
   await loadChecklist();
   bindEvents();
@@ -369,12 +383,14 @@
   function renderResults(result) {
     const errBox = document.getElementById('calcErrors');
     const leverageBox = document.getElementById('leverageInfoBox');
+    const summaryBox = document.getElementById('resultsSummary');
     if (!result.valid) {
       document.getElementById('resPositionSize').textContent = '—';
       document.getElementById('resRiskAmount').textContent = '—';
       document.getElementById('resPotentialProfit').textContent = '—';
       document.getElementById('resRR').textContent = '—';
       leverageBox.classList.add('hidden');
+      summaryBox.classList.add('hidden');
 
       const hasUserInput = ['entryInput', 'slInput', 'tpInput'].some(id => document.getElementById(id).value !== '');
       if (hasUserInput && result.errors && result.errors.length) {
@@ -394,6 +410,21 @@
     document.getElementById('resRiskAmount').textContent = `$${result.riskAmount.toFixed(2)}`;
     document.getElementById('resPotentialProfit').textContent = `$${result.potentialProfit.toFixed(2)}`;
     document.getElementById('resRR').textContent = `1 : ${result.rrRatio}`;
+
+    // Plain-language recap of what the numbers mean — the single highest-value
+    // addition for beginners, since raw labels like "Position Size: 0.42 lots"
+    // don't mean anything until translated into a sentence.
+    if (isBeginnerMode()) {
+      summaryBox.classList.remove('hidden');
+      document.getElementById('resultsSummaryText').innerHTML = I18n.get('resultsSummaryTemplate', {
+        size: `<strong class="text-slate-100">${result.positionSize.toLocaleString()} ${I18n.get(result.sizeUnit)}</strong>`,
+        risk: `<strong class="text-bad">$${result.riskAmount.toFixed(2)}</strong>`,
+        profit: `<strong class="text-good">$${result.potentialProfit.toFixed(2)}</strong>`,
+        rr: `<strong class="text-accent">1:${result.rrRatio}</strong>`
+      });
+    } else {
+      summaryBox.classList.add('hidden');
+    }
 
     if (result.leverage && result.marginRequired !== undefined) {
       leverageBox.classList.remove('hidden');
@@ -769,6 +800,13 @@
     });
     document.getElementById('jpyToggle').addEventListener('change', recalculate);
     document.getElementById('leverageInput').addEventListener('change', recalculate);
+
+    document.getElementById('beginnerModeToggle').addEventListener('change', async (e) => {
+      state.beginnerMode = e.target.checked;
+      await DB.Settings.set('beginnerMode', state.beginnerMode);
+      applyBeginnerMode();
+      recalculate();
+    });
     document.getElementById('pairSelect').addEventListener('change', () => {
       if (state.assetClass === 'crypto') {
         state.selectedSymbol.crypto = document.getElementById('pairSelect').value;

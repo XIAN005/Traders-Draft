@@ -161,7 +161,7 @@
 
         <!-- Calculator card -->
         <div class="card border border-border rounded-3xl p-5 sm:p-6 shadow-card">
-          <div class="flex items-center justify-between mb-5 gap-3">
+          <div class="flex flex-wrap items-center justify-between mb-1.5 gap-3">
             <h2 data-i18n="calculatorTitle" class="text-sm font-semibold text-slate-100">Calculateur de Position</h2>
             <div class="flex bg-panel2 border border-border rounded-xl p-0.5 shrink-0">
               <button data-dir="long" data-i18n="dirLong" class="dir-btn px-3.5 py-1.5 sm:py-1.5 text-xs font-semibold rounded-lg">Long</button>
@@ -169,13 +169,18 @@
             </div>
           </div>
 
+          <label class="flex items-center gap-2 mb-5 cursor-pointer w-fit group">
+            <input id="beginnerModeToggle" type="checkbox" checked class="w-4 h-4 rounded border-border bg-panel2 accent-accent" />
+            <span data-i18n="beginnerModeLabel" class="text-xs text-slate-400 group-hover:text-slate-300 transition">Mode débutant — explications détaillées</span>
+          </label>
+
           <div id="pairSelectField" class="hidden mb-4">
             <label id="pairSelectLabel" data-i18n="pairLabel" class="text-[11px] font-medium text-slate-500">Paire</label>
             <select id="pairSelect" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition">
             </select>
           </div>
 
-          <div class="flex flex-wrap items-end gap-3 sm:gap-4 mb-4">
+          <div class="flex flex-wrap items-end gap-3 sm:gap-4 mb-1.5">
             <div class="flex-1 min-w-[100px]">
               <label data-i18n="slPercentLabel" class="text-[11px] font-medium text-slate-500">Distance SL (%)</label>
               <input id="slPercentInput" type="number" inputmode="decimal" step="any" min="0" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" placeholder="0.5" />
@@ -191,19 +196,23 @@
               <button type="button" class="rr-preset-btn px-3 py-2.5 text-xs font-medium rounded-xl border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="3">1:3</button>
             </div>
           </div>
+          <p id="slRrHelpText" data-i18n="slRrHelpText" class="beginner-help hidden text-[11px] text-slate-500 leading-relaxed mb-4 bg-panel2/60 border border-border rounded-xl p-3"></p>
 
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4">
             <div>
               <label data-i18n="capitalLabel" class="text-[11px] font-medium text-slate-500">Capital ($)</label>
               <input id="capitalInput" type="number" inputmode="decimal" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" value="10000" />
+              <p data-i18n="capitalHelpText" class="beginner-help hidden text-[10px] text-slate-500 leading-relaxed mt-1.5"></p>
             </div>
             <div>
               <label data-i18n="riskLabel" class="text-[11px] font-medium text-slate-500">Risque %</label>
               <input id="riskInput" type="number" inputmode="decimal" step="0.1" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" value="1" />
+              <p data-i18n="riskHelpText" class="beginner-help hidden text-[10px] text-slate-500 leading-relaxed mt-1.5"></p>
             </div>
             <div>
               <label data-i18n="entryLabel" class="text-[11px] font-medium text-slate-500">Prix Entrée</label>
               <input id="entryInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" placeholder="0.00" />
+              <p data-i18n="entryHelpText" class="beginner-help hidden text-[10px] text-slate-500 leading-relaxed mt-1.5"></p>
             </div>
             <div>
               <label class="text-[11px] font-medium text-slate-500">
@@ -211,6 +220,7 @@
                 <span id="slAutoTag" data-i18n="autoTag" class="hidden ml-1 text-[9px] font-semibold text-accent align-middle">AUTO</span>
               </label>
               <input id="slInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-bad/40 focus:border-bad/40 transition" placeholder="0.00" />
+              <p data-i18n="slHelpText" class="beginner-help hidden text-[10px] text-slate-500 leading-relaxed mt-1.5"></p>
             </div>
             <div>
               <label class="text-[11px] font-medium text-slate-500">
@@ -218,6 +228,7 @@
                 <span id="tpAutoTag" data-i18n="autoTag" class="hidden ml-1 text-[9px] font-semibold text-accent align-middle">AUTO</span>
               </label>
               <input id="tpInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-good/40 focus:border-good/40 transition" placeholder="0.00" />
+              <p data-i18n="tpHelpText" class="beginner-help hidden text-[10px] text-slate-500 leading-relaxed mt-1.5"></p>
             </div>
             <div id="assetExtraField" class="hidden">
               <label class="text-[11px] font-medium text-slate-500">
@@ -225,8 +236,9 @@
                 <span id="pipLiveTag" data-i18n="pipLiveTag" class="hidden ml-1 text-[9px] font-semibold text-good align-middle">LIVE</span>
               </label>
               <input id="assetExtraInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" />
+              <p data-i18n="pipValueHelpText" class="beginner-help hidden text-[10px] text-slate-500 leading-relaxed mt-1.5"></p>
             </div>
-            <div>
+            <div id="leverageField">
               <label data-i18n="leverageLabel" class="text-[11px] font-medium text-slate-500">Levier (optionnel)</label>
               <select id="leverageInput" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition">
                 <option value="">—</option>
@@ -240,6 +252,7 @@
                 <option value="500">1:500</option>
                 <option value="1000">1:1000</option>
               </select>
+              <p data-i18n="leverageHelpText" class="beginner-help hidden text-[10px] text-slate-500 leading-relaxed mt-1.5"></p>
             </div>
           </div>
 
@@ -274,6 +287,9 @@
         </div>
 
         <!-- Results -->
+        <div id="resultsSummary" class="hidden card border border-accent/25 bg-accent/5 rounded-2xl p-4 sm:p-4.5">
+          <p id="resultsSummaryText" class="text-xs sm:text-[13px] text-slate-300 leading-relaxed"></p>
+        </div>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-3.5">
           <div class="card border border-border rounded-2xl p-4 sm:p-4.5">
             <p data-i18n="resPositionSize" class="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Taille de position</p>
