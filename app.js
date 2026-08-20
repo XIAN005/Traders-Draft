@@ -6,6 +6,9 @@
     assetClass: 'forex',
     selectedSymbol: {},
     pipFetchToken: 0,
+    baseRateFetchToken: 0,
+    lastBaseToUsdRate: null,
+    lastBaseToUsdSymbol: null,
     direction: 'long',
     activeAccount: null,
     accounts: [],
@@ -351,6 +354,15 @@
     return Math.round((num + Number.EPSILON) * factor) / factor;
   }
 
+  // Default toLocaleString() caps at 3 fraction digits, which silently displays
+  // "0" for legitimate small position sizes (e.g. 0.0005 lots on a small forex
+  // account, or fractional crypto below 0.001 coins). This shows the value at
+  // the same precision the calculator actually computed it with.
+  function formatPositionSize(value, assetClass) {
+    const maxDecimals = assetClass === 'crypto' ? 6 : 4;
+    return value.toLocaleString(undefined, { maximumFractionDigits: maxDecimals });
+  }
+
   async function recalculate() {
     if (!state.activeAccount) {
       document.getElementById('instructorMessages').innerHTML = `<div class="p-3.5 bg-warn/10 border border-warn/30 text-warn rounded-xl text-xs">${I18n.get('instNoAccount')}</div>`;
@@ -371,9 +383,32 @@
     const leverageRaw = document.getElementById('leverageInput').value;
     const leverage = leverageRaw !== '' ? parseFloat(leverageRaw) : undefined;
 
+    const symbol = state.assetClass === 'forex' ? getTradeSymbol() : undefined;
+
+    // Cross pairs (no USD leg, e.g. EURJPY) need the base currency's own USD
+    // rate to compute accurate notional/margin — pipValue alone only encodes
+    // the quote currency's rate and can't derive it (see calculator.js).
+    let baseToUsdRate;
+    if (state.assetClass === 'forex' && symbol && symbol.length === 6) {
+      const base = symbol.slice(0, 3);
+      const quote = symbol.slice(3, 6);
+      if (base !== 'USD' && quote !== 'USD') {
+        const requestId = ++state.baseRateFetchToken;
+        FxRates.getBaseToUsdRate(base).then(rate => {
+          if (requestId !== state.baseRateFetchToken) return; // stale, symbol/asset changed meanwhile
+          if (rate !== null) {
+            state.lastBaseToUsdRate = rate;
+            recalculate();
+          }
+        });
+        baseToUsdRate = (state.lastBaseToUsdSymbol === base) ? state.lastBaseToUsdRate : undefined;
+        state.lastBaseToUsdSymbol = base;
+      }
+    }
+
     const input = {
       assetClass: state.assetClass, capital, riskPercent, entry, sl, tp,
-      direction: state.direction, isJPYPair, leverage,
+      direction: state.direction, isJPYPair, leverage, symbol, baseToUsdRate,
       pipValueOverride: state.assetClass === 'forex' ? extraVal : undefined,
       pointValueOverride: ['indices', 'gold'].includes(state.assetClass) ? extraVal : undefined
     };
@@ -421,7 +456,22 @@
     }
 
     errBox.classList.add('hidden');
-    document.getElementById('resPositionSize').textContent = result.positionSize.toLocaleString();
+
+    // Defense in depth: even though calculator.js now rejects the inputs that
+    // used to produce these, never render NaN/Infinity as if it were a real result.
+    if (!Number.isFinite(result.positionSize) || !Number.isFinite(result.riskAmount)) {
+      document.getElementById('resPositionSize').textContent = '—';
+      document.getElementById('resRiskAmount').textContent = '—';
+      document.getElementById('resPotentialProfit').textContent = '—';
+      document.getElementById('resRR').textContent = '—';
+      leverageBox.classList.add('hidden');
+      summaryBox.classList.add('hidden');
+      errBox.innerHTML = `<p class="font-medium mb-1">${escapeHtml(I18n.get('calcErrorsTitle'))}</p><ul class="list-disc list-inside space-y-0.5"><li>${escapeHtml(I18n.get('errUnknownAsset'))}</li></ul>`;
+      errBox.classList.remove('hidden');
+      return;
+    }
+
+    document.getElementById('resPositionSize').textContent = formatPositionSize(result.positionSize, result.assetClass);
     document.getElementById('resSizeUnit').textContent = I18n.get(result.sizeUnit);
     document.getElementById('resRiskAmount').textContent = `$${result.riskAmount.toFixed(2)}`;
     document.getElementById('resPotentialProfit').textContent = `$${result.potentialProfit.toFixed(2)}`;
@@ -433,7 +483,7 @@
     if (isBeginnerMode()) {
       summaryBox.classList.remove('hidden');
       document.getElementById('resultsSummaryText').innerHTML = I18n.get('resultsSummaryTemplate', {
-        size: `<strong class="text-slate-100">${result.positionSize.toLocaleString()} ${I18n.get(result.sizeUnit)}</strong>`,
+        size: `<strong class="text-slate-100">${formatPositionSize(result.positionSize, result.assetClass)} ${I18n.get(result.sizeUnit)}</strong>`,
         risk: `<strong class="text-bad">$${result.riskAmount.toFixed(2)}</strong>`,
         profit: `<strong class="text-good">$${result.potentialProfit.toFixed(2)}</strong>`,
         rr: `<strong class="text-accent">1:${result.rrRatio}</strong>`

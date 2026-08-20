@@ -207,6 +207,8 @@ const I18n = (() => {
       errLongTp: "Pour un trade LONG, le Take-Profit doit être supérieur au prix d'Entrée.",
       errShortTp: "Pour un trade SHORT, le Take-Profit doit être inférieur au prix d'Entrée.",
       errUnknownAsset: "Classe d'actif inconnue.",
+      errPipValue: "La valeur du pip doit être supérieure à 0.",
+      errPointValue: "La valeur du point doit être supérieure à 0.",
       calcErrorsTitle: "Corrigez les points suivants :"
     },
 
@@ -414,6 +416,8 @@ const I18n = (() => {
       errLongTp: "For a LONG trade, Take-Profit must be above Entry.",
       errShortTp: "For a SHORT trade, Take-Profit must be below Entry.",
       errUnknownAsset: "Unknown asset class.",
+      errPipValue: "Pip value must be greater than 0.",
+      errPointValue: "Point value must be greater than 0.",
       calcErrorsTitle: "Please fix the following:"
     }
   };

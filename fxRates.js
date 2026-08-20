@@ -74,10 +74,28 @@ const FxRates = (() => {
     }
   }
 
+  /**
+   * Resolves the USD value of 1 unit of a given base currency (e.g. 'EUR' -> ~1.10),
+   * used to compute accurate USD notional for cross pairs (no USD leg, e.g. EURJPY).
+   * Returns null if not resolvable (offline, unknown currency, etc.) — callers
+   * should treat that as "notional unavailable" rather than guessing.
+   */
+  async function getBaseToUsdRate(baseCurrency) {
+    if (baseCurrency === 'USD') return 1;
+    try {
+      const rates = await fetchRates(baseCurrency);
+      const rate = rates['USD'];
+      return (typeof rate === 'number' && rate > 0) ? rate : null;
+    } catch (err) {
+      console.warn('FxRates: base->USD rate fetch failed', err);
+      return null;
+    }
+  }
+
   function round(num, decimals) {
     const factor = Math.pow(10, decimals);
     return Math.round((num + Number.EPSILON) * factor) / factor;
   }
 
-  return { fetchRates, getForexPipValueUSD };
+  return { fetchRates, getForexPipValueUSD, getBaseToUsdRate };
 })();
