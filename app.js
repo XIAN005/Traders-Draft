@@ -4,6 +4,7 @@
 (async function App() {
   let state = {
     assetClass: 'forex',
+    selectedSymbol: {},
     direction: 'long',
     activeAccount: null,
     accounts: [],
@@ -158,24 +159,93 @@
     const extraField = document.getElementById('assetExtraField');
     const extraInput = document.getElementById('assetExtraInput');
     const jpyWrap = document.getElementById('jpyToggleWrap');
+    const pairField = document.getElementById('pairSelectField');
+    const pairLabel = document.getElementById('pairSelectLabel');
 
     jpyWrap.classList.add('hidden');
     jpyWrap.classList.remove('flex');
     extraField.classList.remove('hidden');
+    pairField.classList.add('hidden');
 
     if (assetClass === 'forex') {
-      extraInput.value = 10;
-      jpyWrap.classList.remove('hidden');
-      jpyWrap.classList.add('flex');
+      pairField.classList.remove('hidden');
+      pairLabel.dataset.i18n = 'pairLabel';
+      pairLabel.textContent = I18n.get('pairLabel');
+      populatePairSelect();
+      applyPairSelection();
+    } else if (assetClass === 'crypto') {
+      pairField.classList.remove('hidden');
+      pairLabel.dataset.i18n = 'pairLabelCrypto';
+      pairLabel.textContent = I18n.get('pairLabelCrypto');
+      extraField.classList.add('hidden');
+      populatePairSelect();
     } else if (assetClass === 'indices') {
-      extraInput.value = 1;
+      pairField.classList.remove('hidden');
+      pairLabel.dataset.i18n = 'pairLabelIndex';
+      pairLabel.textContent = I18n.get('pairLabelIndex');
+      populatePairSelect();
+      applyPairSelection();
     } else if (assetClass === 'gold') {
       extraInput.value = 100;
-    } else {
-      extraField.classList.add('hidden');
     }
 
     recalculate();
+  }
+
+  function populatePairSelect() {
+    const pairSelect = document.getElementById('pairSelect');
+    let list = [];
+    if (state.assetClass === 'forex') list = Calculator.FOREX_PAIRS.map(p => p.symbol);
+    else if (state.assetClass === 'crypto') list = Calculator.CRYPTO_PAIRS;
+    else if (state.assetClass === 'indices') list = Calculator.INDEX_PAIRS.map(p => p.symbol);
+
+    const options = list.map(sym => {
+      const display = state.assetClass === 'forex' ? `${sym.slice(0, 3)}/${sym.slice(3)}` : sym;
+      return `<option value="${sym}">${display}</option>`;
+    }).join('');
+    pairSelect.innerHTML = options + `<option value="OTHER">${I18n.get('pairOther')}</option>`;
+
+    if (!state.selectedSymbol[state.assetClass]) {
+      state.selectedSymbol[state.assetClass] = list[0] || 'OTHER';
+    }
+    pairSelect.value = state.selectedSymbol[state.assetClass];
+  }
+
+  function applyPairSelection() {
+    const pairSelect = document.getElementById('pairSelect');
+    const extraInput = document.getElementById('assetExtraInput');
+    const jpyToggle = document.getElementById('jpyToggle');
+    const symbol = pairSelect.value;
+    state.selectedSymbol[state.assetClass] = symbol;
+
+    if (state.assetClass === 'forex') {
+      if (symbol === 'OTHER') {
+        extraInput.value = 10;
+        jpyToggle.checked = false;
+        return;
+      }
+      const pair = Calculator.FOREX_PAIRS.find(p => p.symbol === symbol);
+      if (pair) {
+        extraInput.value = pair.pipValue;
+        jpyToggle.checked = pair.isJPY;
+      }
+    } else if (state.assetClass === 'indices') {
+      if (symbol === 'OTHER') {
+        extraInput.value = 1;
+        return;
+      }
+      const idx = Calculator.INDEX_PAIRS.find(p => p.symbol === symbol);
+      if (idx) extraInput.value = idx.pointValue;
+    }
+  }
+
+  function getTradeSymbol() {
+    if (state.assetClass === 'gold') return 'XAUUSD';
+    if (['forex', 'crypto', 'indices'].includes(state.assetClass)) {
+      const sym = state.selectedSymbol[state.assetClass];
+      if (sym && sym !== 'OTHER') return sym;
+    }
+    return state.assetClass.toUpperCase();
   }
 
   function setDirection(direction) {
@@ -527,6 +597,7 @@
   function updateInterfaceLanguage(lang) {
     I18n.setLanguage(lang);
     document.querySelectorAll('[data-i18n]').forEach(el => {
+      if (el.id === 'pairSelectLabel') return; // géré par setAssetClass selon la classe d'actif active
       el.textContent = I18n.get(el.dataset.i18n);
     });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
@@ -534,6 +605,9 @@
     });
     const inputRule = document.getElementById('newRuleInput');
     if (inputRule) inputRule.placeholder = I18n.get('addRulePlaceholder');
+    const pairLabel = document.getElementById('pairSelectLabel');
+    if (pairLabel) pairLabel.textContent = I18n.get(pairLabel.dataset.i18n);
+    if (['forex', 'crypto', 'indices'].includes(state.assetClass)) populatePairSelect();
     loadAccounts();
     renderChecklist();
     recalculate();
@@ -545,6 +619,14 @@
     document.querySelectorAll('.dir-btn').forEach(btn => btn.addEventListener('click', () => setDirection(btn.dataset.dir)));
     ['capitalInput', 'riskInput', 'entryInput', 'slInput', 'tpInput', 'assetExtraInput'].forEach(id => document.getElementById(id).addEventListener('input', recalculate));
     document.getElementById('jpyToggle').addEventListener('change', recalculate);
+    document.getElementById('pairSelect').addEventListener('change', () => {
+      if (state.assetClass === 'crypto') {
+        state.selectedSymbol.crypto = document.getElementById('pairSelect').value;
+      } else {
+        applyPairSelection();
+      }
+      recalculate();
+    });
 
     document.getElementById('langSelector').addEventListener('change', (e) => updateInterfaceLanguage(e.target.value));
 
@@ -598,7 +680,7 @@
       await DB.Trades.create({
         accountId: state.activeAccount.id,
         assetClass: state.assetClass,
-        symbol: state.assetClass.toUpperCase(),
+        symbol: getTradeSymbol(),
         direction: state.direction,
         entry, sl, tp,
         riskPercent,

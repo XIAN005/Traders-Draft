@@ -10,6 +10,43 @@ const Calculator = (() => {
     gold: { labelKey: 'assetGold', sizeUnitKey: 'unitLots', defaultPointValue: 100 }
   };
 
+  // Majeures + croisées populaires. pipValue = valeur approximative en USD
+  // pour 1 lot standard (100k unités) au taux de change moyen — reste
+  // éditable dans l'UI pour une précision parfaite selon le compte/devise.
+  const FOREX_PAIRS = [
+    { symbol: 'EURUSD', isJPY: false, pipValue: 10 },
+    { symbol: 'GBPUSD', isJPY: false, pipValue: 10 },
+    { symbol: 'USDJPY', isJPY: true, pipValue: 9.3 },
+    { symbol: 'USDCHF', isJPY: false, pipValue: 11.2 },
+    { symbol: 'USDCAD', isJPY: false, pipValue: 7.4 },
+    { symbol: 'AUDUSD', isJPY: false, pipValue: 10 },
+    { symbol: 'NZDUSD', isJPY: false, pipValue: 10 },
+    { symbol: 'EURJPY', isJPY: true, pipValue: 9.3 },
+    { symbol: 'GBPJPY', isJPY: true, pipValue: 9.3 },
+    { symbol: 'EURGBP', isJPY: false, pipValue: 12.6 },
+    { symbol: 'AUDJPY', isJPY: true, pipValue: 9.3 }
+  ];
+
+  // Cryptos populaires — juste pour identifier le symbole au journal,
+  // le calcul lui-même (riskAmount / slDistance) ne dépend pas de la paire.
+  const CRYPTO_PAIRS = [
+    'BTCUSD', 'ETHUSD', 'SOLUSD', 'XRPUSD', 'BNBUSD',
+    'ADAUSD', 'DOGEUSD', 'LTCUSD', 'AVAXUSD', 'LINKUSD'
+  ];
+
+  // Indices majeurs avec leur valeur de point approximative en USD
+  // pour 1 contrat standard — varie selon le broker, reste éditable.
+  const INDEX_PAIRS = [
+    { symbol: 'US30', pointValue: 1 },
+    { symbol: 'NAS100', pointValue: 1 },
+    { symbol: 'SPX500', pointValue: 1 },
+    { symbol: 'GER40', pointValue: 1 },
+    { symbol: 'UK100', pointValue: 1 },
+    { symbol: 'JPN225', pointValue: 1 },
+    { symbol: 'FRA40', pointValue: 1 },
+    { symbol: 'AUS200', pointValue: 1 }
+  ];
+
   function calculate(input) {
     const {
       assetClass, capital, riskPercent, entry, sl, tp, direction = 'long',
@@ -101,5 +138,5 @@ const Calculator = (() => {
     return Math.round((num + Number.EPSILON) * factor) / factor;
   }
 
-  return { calculate, ASSET_CLASSES };
+  return { calculate, ASSET_CLASSES, FOREX_PAIRS, CRYPTO_PAIRS, INDEX_PAIRS };
 })();

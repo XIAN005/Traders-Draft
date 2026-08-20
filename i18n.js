@@ -65,6 +65,10 @@ const I18n = (() => {
       tpLabel: "Take Profit",
       pipValueLabel: "Valeur Point/Pip ($)",
       jpyLabel: "Paire en JPY (pip = 0.01)",
+      pairLabel: "Paire de devises",
+      pairLabelCrypto: "Paire Crypto",
+      pairLabelIndex: "Indice",
+      pairOther: "Autre / Personnalisé",
       
       resPositionSize: "Taille de position",
       resRiskAmount: "Montant risqué",
@@ -226,6 +230,10 @@ const I18n = (() => {
       tpLabel: "Take Profit",
       pipValueLabel: "Pip/Point Value ($)",
       jpyLabel: "JPY pair (pip = 0.01)",
+      pairLabel: "Currency Pair",
+      pairLabelCrypto: "Crypto Pair",
+      pairLabelIndex: "Index",
+      pairOther: "Other / Custom",
       
       resPositionSize: "Position Size",
       resRiskAmount: "Risk Amount",
