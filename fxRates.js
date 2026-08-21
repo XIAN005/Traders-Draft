@@ -8,8 +8,19 @@ const FxRates = (() => {
   const API_BASE = 'https://api.frankfurter.dev/v2';
   const CACHE_TTL_MS = 60 * 60 * 1000; // 1h, since ECB rates only move once/day anyway
 
+  const COINGECKO_BASE = 'https://api.coingecko.com/api/v3';
+  const CRYPTO_CACHE_TTL_MS = 15 * 1000; // 15s — this one is a real live ticker, not a daily rate
+  // Traft's CRYPTO_PAIRS uses broker-style symbols (BTCUSD); CoinGecko needs its own coin ids.
+  const COINGECKO_IDS = {
+    BTCUSD: 'bitcoin', ETHUSD: 'ethereum', SOLUSD: 'solana', XRPUSD: 'ripple',
+    BNBUSD: 'binancecoin', ADAUSD: 'cardano', DOGEUSD: 'dogecoin', LTCUSD: 'litecoin',
+    AVAXUSD: 'avalanche-2', LINKUSD: 'chainlink'
+  };
+
   let cache = { base: null, rates: null, fetchedAt: 0 };
   let inflight = null;
+  let cryptoCache = {}; // symbol -> { price, fetchedAt }
+  let cryptoInflight = {}; // symbol -> promise
 
   async function fetchRates(base = 'USD') {
     const now = Date.now();
@@ -92,10 +103,50 @@ const FxRates = (() => {
     }
   }
 
+  /**
+   * Returns the current live USD price for a crypto symbol in Traft's
+   * broker-style format (e.g. 'BTCUSD'), fetched from CoinGecko's free,
+   * no-key public endpoint — a real live ticker, unlike the daily FX rates
+   * above, so it's cached for 15s instead of 1h.
+   * Returns null if unavailable (unknown symbol, offline, rate-limited,
+   * etc.) — caller should leave the entry price for the user to fill in.
+   */
+  async function getCryptoPrice(symbol) {
+    const coinId = COINGECKO_IDS[symbol];
+    if (!coinId) return null;
+
+    const now = Date.now();
+    const cached = cryptoCache[symbol];
+    if (cached && (now - cached.fetchedAt) < CRYPTO_CACHE_TTL_MS) {
+      return cached.price;
+    }
+    if (cryptoInflight[symbol]) return cryptoInflight[symbol];
+
+    cryptoInflight[symbol] = fetch(`${COINGECKO_BASE}/simple/price?ids=${coinId}&vs_currencies=usd`)
+      .then(res => {
+        if (!res.ok) throw new Error(`Crypto price fetch failed: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        const price = data[coinId] && data[coinId].usd;
+        delete cryptoInflight[symbol];
+        if (typeof price !== 'number') return null;
+        cryptoCache[symbol] = { price, fetchedAt: Date.now() };
+        return price;
+      })
+      .catch(err => {
+        delete cryptoInflight[symbol];
+        console.warn('FxRates: live crypto price fetch failed', err);
+        return null;
+      });
+
+    return cryptoInflight[symbol];
+  }
+
   function round(num, decimals) {
     const factor = Math.pow(10, decimals);
     return Math.round((num + Number.EPSILON) * factor) / factor;
   }
 
-  return { fetchRates, getForexPipValueUSD, getBaseToUsdRate };
+  return { fetchRates, getForexPipValueUSD, getBaseToUsdRate, getCryptoPrice };
 })();
