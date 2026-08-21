@@ -83,6 +83,7 @@ const I18n = (() => {
       pairLabelIndex: "Indice",
       pairOther: "Autre / Personnalisé",
       pipLiveTag: "● TAUX EN DIRECT",
+      priceLiveTag: "● PRIX EN DIRECT",
 
       beginnerModeLabel: "Mode débutant — explications détaillées",
       slRrHelpText: "La Distance SL (%) fixe la distance entre votre prix d'entrée et votre Stop Loss, en pourcentage. Le Ratio R:R visé détermine où placer automatiquement le Take Profit par rapport au risque pris (ex. 1:2 = viser deux fois plus de gain que de perte potentielle). Ces deux champs remplissent le Stop Loss et le Take Profit ci-dessous pour vous — vous pouvez toujours les modifier à la main ensuite.",
@@ -292,6 +293,7 @@ const I18n = (() => {
       pairLabelIndex: "Index",
       pairOther: "Other / Custom",
       pipLiveTag: "● LIVE RATE",
+      priceLiveTag: "● LIVE PRICE",
 
       beginnerModeLabel: "Beginner mode — detailed explanations",
       slRrHelpText: "SL Distance (%) sets how far your Stop Loss sits from your entry price, as a percentage. The Target R:R Ratio decides where to place the Take Profit relative to the risk taken (e.g. 1:2 = aim for twice the potential gain vs. the potential loss). Both fields auto-fill the Stop Loss and Take Profit below for you — you can still edit them by hand afterward.",

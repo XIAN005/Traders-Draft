@@ -217,7 +217,10 @@
               <p data-i18n="riskHelpText" class="beginner-help hidden text-[10px] text-slate-500 leading-relaxed mt-1.5"></p>
             </div>
             <div>
-              <label data-i18n="entryLabel" class="text-[11px] font-medium text-slate-500">Prix Entrée</label>
+              <label class="text-[11px] font-medium text-slate-500">
+                <span data-i18n="entryLabel">Prix Entrée</span>
+                <span id="priceLiveTag" data-i18n="priceLiveTag" class="hidden ml-1 text-[9px] font-semibold text-good align-middle">LIVE</span>
+              </label>
               <input id="entryInput" type="number" inputmode="decimal" step="any" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" placeholder="0.00" />
               <p data-i18n="entryHelpText" class="beginner-help hidden text-[10px] text-slate-500 leading-relaxed mt-1.5"></p>
             </div>

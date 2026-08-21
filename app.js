@@ -7,6 +7,7 @@
     selectedSymbol: {},
     pipFetchToken: 0,
     baseRateFetchToken: 0,
+    priceFetchToken: 0,
     lastBaseToUsdRate: null,
     lastBaseToUsdSymbol: null,
     direction: 'long',
@@ -203,6 +204,7 @@
       pairLabel.textContent = I18n.get('pairLabelCrypto');
       extraField.classList.add('hidden');
       populatePairSelect();
+      applyPairSelection();
     } else if (assetClass === 'indices') {
       pairField.classList.remove('hidden');
       pairLabel.dataset.i18n = 'pairLabelIndex';
@@ -276,6 +278,28 @@
       }
       const idx = Calculator.INDEX_PAIRS.find(p => p.symbol === symbol);
       if (idx) extraInput.value = idx.pointValue;
+    } else if (state.assetClass === 'crypto') {
+      const priceLiveTag = document.getElementById('priceLiveTag');
+      if (symbol === 'OTHER') {
+        priceLiveTag?.classList.add('hidden');
+        return;
+      }
+
+      // Unlike pip value, there's no static fallback here — we don't ship
+      // approximate crypto prices (they'd be stale within hours). Leave
+      // whatever the user already typed alone until/unless a live price lands.
+      priceLiveTag?.classList.add('hidden');
+      const requestId = ++state.priceFetchToken;
+      FxRates.getCryptoPrice(symbol).then(price => {
+        // Ignore stale responses (user switched pair/asset class meanwhile)
+        if (requestId !== state.priceFetchToken) return;
+        if (price !== null && state.selectedSymbol.crypto === symbol) {
+          document.getElementById('entryInput').value = price;
+          priceLiveTag?.classList.remove('hidden');
+          autoFillSlTp();
+          recalculate();
+        }
+      });
     }
   }
 
