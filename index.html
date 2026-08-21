@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Traft — Traders Draft</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 323.92795 323.92795'%3E%3Crect width='323.92795' height='323.92795' fill='%2314171c'/%3E%3Cg transform='translate(-477.36749,4.19573)'%3E%3Cpath fill='%237fb8a6' d='m 575.15446,88.003572 v 29.938278 h -29.93831 v 22.05139 h 29.93831 v 38.94843 51.98962 h 27.52326 v -51.98962 -37.49944 h 27.92928 27.52328 13.03795 c 10.40836,0 18.50994,2.89652 24.30429,8.69088 5.79436,5.79436 8.69085,13.8959 8.69085,24.3043 0,10.4084 -2.89649,18.45674 -8.69085,24.14382 -5.79435,5.68706 -13.89593,8.53043 -24.30429,8.53043 H 658.13028 V 168.9655 H 630.607 v 61.96745 h 42.33114 c 11.80333,0 22.15861,-2.36172 31.06477,-7.08303 9.01347,-4.72131 15.93417,-11.37299 20.76281,-19.95723 4.93591,-8.58423 7.40393,-18.40305 7.40393,-29.45528 0,-11.15951 -2.46802,-20.97834 -7.40393,-29.45529 -4.82864,-8.58423 -11.69621,-15.23589 -20.60235,-19.95722 -8.90614,-4.72132 -19.31458,-7.08305 -31.22523,-7.08305 H 632.61438 630.607 602.67772 V 88.003572 Z'/%3E%3C/g%3E%3C/svg%3E">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -115,24 +116,30 @@
 
   <!-- HEADER -->
   <header class="border-b border-border bg-panel/90 backdrop-blur-md sticky top-0 z-30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-x-2 gap-y-2.5">
       <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-accent/20 to-accent2/5 border border-accent/30 flex items-center justify-center text-accent font-extrabold text-sm shadow-glow shrink-0">T</div>
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-accent/20 to-accent2/5 border border-accent/30 flex items-center justify-center text-accent shadow-glow shrink-0 p-1.5">
+          <svg viewBox="0 0 323.92795 323.92795" fill="currentColor" class="w-full h-full" aria-hidden="true">
+            <g transform="translate(-477.36749,4.19573)">
+              <path d="m 575.15446,88.003572 v 29.938278 h -29.93831 v 22.05139 h 29.93831 v 38.94843 51.98962 h 27.52326 v -51.98962 -37.49944 h 27.92928 27.52328 13.03795 c 10.40836,0 18.50994,2.89652 24.30429,8.69088 5.79436,5.79436 8.69085,13.8959 8.69085,24.3043 0,10.4084 -2.89649,18.45674 -8.69085,24.14382 -5.79435,5.68706 -13.89593,8.53043 -24.30429,8.53043 H 658.13028 V 168.9655 H 630.607 v 61.96745 h 42.33114 c 11.80333,0 22.15861,-2.36172 31.06477,-7.08303 9.01347,-4.72131 15.93417,-11.37299 20.76281,-19.95723 4.93591,-8.58423 7.40393,-18.40305 7.40393,-29.45528 0,-11.15951 -2.46802,-20.97834 -7.40393,-29.45529 -4.82864,-8.58423 -11.69621,-15.23589 -20.60235,-19.95722 -8.90614,-4.72132 -19.31458,-7.08305 -31.22523,-7.08305 H 632.61438 630.607 602.67772 V 88.003572 Z" />
+            </g>
+          </svg>
+        </div>
         <div class="min-w-0">
           <h1 data-i18n="appTitle" class="text-sm font-bold text-slate-50 leading-none tracking-tight">Traft</h1>
           <p data-i18n="appSubtitle" class="hidden sm:block text-[11px] text-slate-500 leading-none mt-1.5 truncate">Traders Draft — Risk Manager &amp; Checklist</p>
         </div>
       </div>
-      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <select id="langSelector" class="bg-panel2 border border-border text-xs font-medium rounded-xl px-2.5 py-2 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition">
+      <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto order-3 sm:order-none">
+        <select id="langSelector" class="shrink-0 bg-panel2 border border-border text-xs font-medium rounded-xl px-2.5 py-2 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition">
           <option value="fr">FR</option>
           <option value="en">EN</option>
         </select>
-        <select id="accountSelector" class="max-w-[34vw] sm:max-w-none bg-panel2 border border-border text-xs rounded-xl px-2.5 py-2 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition truncate"></select>
+        <select id="accountSelector" class="flex-1 min-w-0 sm:flex-none sm:max-w-none bg-panel2 border border-border text-xs rounded-xl px-2.5 py-2 text-slate-300 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition truncate"></select>
         <button id="deleteAccountBtn" type="button" aria-label="Delete account" class="bg-panel2 border border-border hover:border-bad/40 hover:text-bad text-slate-400 rounded-xl p-2 transition shrink-0 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-slate-400">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M6.5 4V2.8c0-.4.3-.8.8-.8h1.4c.5 0 .8.4.8.8V4M4.5 4l.5 9c0 .6.5 1 1 1h4c.5 0 1-.4 1-1l.5-9"/></svg>
         </button>
-        <button id="addAccountBtn" data-i18n="addAccountBtn" type="button" class="bg-panel2 border border-border hover:border-accent/30 hover:text-accent text-xs font-semibold rounded-xl px-3 py-2 text-slate-300 transition shrink-0">+ Compte</button>
+        <button id="addAccountBtn" data-i18n="addAccountBtn" type="button" class="bg-panel2 border border-border hover:border-accent/30 hover:text-accent text-xs font-semibold rounded-xl px-3 py-2 text-slate-300 transition shrink-0 whitespace-nowrap">+ Compte</button>
       </div>
     </div>
   </header>
@@ -141,9 +148,9 @@
 
     <!-- MAIN TABS -->
     <div class="flex gap-1 bg-panel border border-border rounded-2xl p-1 shadow-card">
-      <button id="tabCalcBtn" data-i18n="tabCalc" class="main-tab flex-1 py-2.5 sm:py-2.5 text-xs font-semibold rounded-xl bg-accent/10 text-accent border border-accent/30 transition">Calculateur &amp; Checklist</button>
-      <button id="tabAnalyticsBtn" data-i18n="analyticsTitle" class="main-tab flex-1 py-2.5 sm:py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-slate-200 transition">Statistiques</button>
-      <button id="tabEduBtn" data-i18n="tabEdu" class="main-tab flex-1 py-2.5 sm:py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-slate-200 transition">Guide &amp; Éducation</button>
+      <button id="tabCalcBtn" data-i18n="tabCalc" class="main-tab flex-1 py-2.5 sm:py-2.5 text-[11px] sm:text-xs font-semibold rounded-xl bg-accent/10 text-accent border border-accent/30 transition px-1 leading-tight">Calculateur &amp; Checklist</button>
+      <button id="tabAnalyticsBtn" data-i18n="analyticsTitle" class="main-tab flex-1 py-2.5 sm:py-2.5 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-slate-200 transition px-1 leading-tight">Statistiques</button>
+      <button id="tabEduBtn" data-i18n="tabEdu" class="main-tab flex-1 py-2.5 sm:py-2.5 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-slate-200 transition px-1 leading-tight">Guide &amp; Éducation</button>
     </div>
 
     <!-- MAIN CALCULATOR SECTION -->
@@ -180,21 +187,21 @@
             </select>
           </div>
 
-          <div class="flex flex-wrap items-end gap-3 sm:gap-4 mb-1.5">
-            <div class="flex-1 min-w-[100px]">
+          <div class="flex gap-3 sm:gap-4 mb-3">
+            <div class="flex-1 min-w-0">
               <label data-i18n="slPercentLabel" class="text-[11px] font-medium text-slate-500">Distance SL (%)</label>
               <input id="slPercentInput" type="number" inputmode="decimal" step="any" min="0" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" placeholder="0.5" />
             </div>
-            <div class="flex-1 min-w-[100px]">
+            <div class="flex-1 min-w-0">
               <label data-i18n="rrTargetLabel" class="text-[11px] font-medium text-slate-500">Ratio R:R visé</label>
               <input id="rrTargetInput" type="number" inputmode="decimal" step="0.1" min="0" class="num-input mono w-full mt-2 bg-panel2 border border-border rounded-2xl px-3.5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition" placeholder="2" />
             </div>
-            <div class="flex gap-1.5 flex-wrap">
-              <button type="button" class="rr-preset-btn px-3 py-2.5 text-xs font-medium rounded-xl border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="1">1:1</button>
-              <button type="button" class="rr-preset-btn px-3 py-2.5 text-xs font-medium rounded-xl border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="1.5">1:1.5</button>
-              <button type="button" class="rr-preset-btn px-3 py-2.5 text-xs font-medium rounded-xl border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="2">1:2</button>
-              <button type="button" class="rr-preset-btn px-3 py-2.5 text-xs font-medium rounded-xl border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="3">1:3</button>
-            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-1.5 sm:flex sm:gap-1.5 sm:flex-wrap mb-1.5">
+            <button type="button" class="rr-preset-btn px-2 sm:px-3 py-2.5 text-xs font-medium rounded-xl border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="1">1:1</button>
+            <button type="button" class="rr-preset-btn px-2 sm:px-3 py-2.5 text-xs font-medium rounded-xl border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="1.5">1:1.5</button>
+            <button type="button" class="rr-preset-btn px-2 sm:px-3 py-2.5 text-xs font-medium rounded-xl border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="2">1:2</button>
+            <button type="button" class="rr-preset-btn px-2 sm:px-3 py-2.5 text-xs font-medium rounded-xl border border-border text-slate-400 hover:text-accent hover:border-accent/40 transition" data-rr="3">1:3</button>
           </div>
           <p id="slRrHelpText" data-i18n="slRrHelpText" class="beginner-help hidden text-[11px] text-slate-500 leading-relaxed mb-4 bg-panel2/60 border border-border rounded-xl p-3"></p>
 
